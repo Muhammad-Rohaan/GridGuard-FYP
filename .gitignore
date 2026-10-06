@@ -3,6 +3,10 @@ venv/
 .venv/
 env/
 
+data/household_power_consumption.txt
+data/household_power_consumption.csv
+*.zip
+
 # Python
 __pycache__/
 *.py[cod]
