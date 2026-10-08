@@ -3,7 +3,7 @@ import os
 import pandas as pd
 
 # 1. Path to the folder containing your xlsx files
-folder_path = "data/Electric power load data/2017/1_hour/2017_1hour_Residential"
+folder_path = "data/Electric power load data/2019/30_minutes/2019_30min_Residential"
 file_list = glob.glob(os.path.join(folder_path, '*.xlsx'))
 
 dataframes = []
@@ -24,5 +24,5 @@ for file in file_list:
 combined_df = pd.concat(dataframes, ignore_index=True)
 
 # 3. Save to a single CSV or XLSX file
-combined_df.to_csv('2017_1hour_Residential.csv', index=False)
+combined_df.to_csv('2019_30min_Residential.csv', index=False)
 # combined_df.to_excel('combined_power_data.xlsx', index=False)

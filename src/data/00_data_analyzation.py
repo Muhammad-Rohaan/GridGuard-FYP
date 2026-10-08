@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # 1. Load data
-filepath = '2017_1hour_Residential.csv'
+filepath = '2017_1hour_Office.csv'
 df = pd.read_csv(filepath)
 
 # 2. Check column data types and clean up spaces
