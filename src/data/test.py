@@ -1,7 +1,7 @@
 import glob
 import os
 import pandas as pd
-
+## Excel file conversion into CSVs
 # 1. Path to the folder containing your xlsx files
 folder_path = "data/Electric power load data/2019/30_minutes/2019_30min_Residential"
 file_list = glob.glob(os.path.join(folder_path, '*.xlsx'))
