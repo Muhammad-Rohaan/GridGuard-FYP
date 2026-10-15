@@ -3,14 +3,14 @@ import os
 import pandas as pd
 ## Excel file conversion into CSVs
 # 1. Path to the folder containing your xlsx files
-folder_path = "data/Electric power load data/2019/30_minutes/2019_30min_Residential"
-file_list = glob.glob(os.path.join(folder_path, '*.xlsx'))
+folder_path = "data/Electric PowerLoad Data_CSVs/Public/1_Hr"
+file_list = glob.glob(os.path.join(folder_path, '*.csv'))
 
 dataframes = []
 
 for file in file_list:
     # Read the Time and Power (kW) columns
-    df = pd.read_excel(file)
+    df = pd.read_csv(file)
     
     # Optional: Add a column to track which file the data came from
     # df['Source_File'] = os.path.basename(file)
@@ -24,5 +24,5 @@ for file in file_list:
 combined_df = pd.concat(dataframes, ignore_index=True)
 
 # 3. Save to a single CSV or XLSX file
-combined_df.to_csv('2019_30min_Residential.csv', index=False)
+combined_df.to_csv('1_hr_Public.csv', index=False)
 # combined_df.to_excel('combined_power_data.xlsx', index=False)
