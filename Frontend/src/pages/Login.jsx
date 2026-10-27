@@ -27,14 +27,14 @@ export default function Login() {
   };
 
   return (
-    <AuthShell title="Operator Sign-In" subtitle="Authenticate to access the grid control dashboard">
+    <AuthShell title="Sign-In" subtitle="Authenticate to access the grid control dashboard">
       {registered && <div className="alert alert-success">⚡ Account energized. Please sign in.</div>}
       {error && <div className="alert alert-error">⚠ {error}</div>}
       <form onSubmit={submit} noValidate>
         <div className="field">
           <label>Email</label>
           <div className="input-wrap"><Mail className="lead-icon" />
-            <input type="email" placeholder="operator@gridguard.ai" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
+            <input type="email" placeholder="name@gridguard.ai" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
           </div>
         </div>
         <div className="field">
@@ -48,7 +48,7 @@ export default function Login() {
           {loading ? <span className="spin" /> : null}{loading ? 'Connecting to grid…' : '⚡ Energize Session'}
         </button>
       </form>
-      <p className="switch-line">New operator? <Link to="/signup">Request grid access</Link></p>
+      <p className="switch-line">New User? <Link to="/signup">Request grid access</Link></p>
     </AuthShell>
   );
 }

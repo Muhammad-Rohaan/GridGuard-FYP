@@ -20,8 +20,8 @@ export default function SignUp() {
     e.preventDefault(); setError('');
     if (f.name.trim().length < 3) return setError('Please enter your full name.');
     if (!/^\S+@\S+\.\S+$/.test(f.email)) return setError('Please enter a valid email address.');
-    if (!(f.password.length >= 8 && /[A-Za-z]/.test(f.password) && /[0-9]/.test(f.password)))
-      return setError('Password must be at least 8 characters long and contain both letters and numbers.');
+    if (!(f.password.length > 0 && /[A-Za-z]/.test(f.password) && /[0-9]/.test(f.password)))
+      return setError('Password must be entered.');
     if (f.password !== f.confirm) return setError('Passwords do not match.');
     setLoading(true);
     try {
@@ -32,7 +32,7 @@ export default function SignUp() {
   };
 
   return (
-    <AuthShell title="Request Grid Access" subtitle="Create an operator account (role assigned by System Administrator)">
+    <AuthShell title="Register New User" subtitle="Create an user account">
       {error && <div className="alert alert-error">⚠ {error}</div>}
       <form onSubmit={submit} noValidate>
         <div className="field">
@@ -60,16 +60,8 @@ export default function SignUp() {
           <div className="seg" /><div className="seg" /><div className="seg" /><div className="seg" />
           <span className="strength-label">{STRENGTH[level]}</span>
         </div>
-        <div className="field-row">
-          <div className="field"><label>Phone (optional)</label>
-            <div className="input-wrap"><input placeholder="+92 300 0000000" value={f.phone} onChange={set('phone')} /></div>
-          </div>
-          <div className="field"><label>Affiliation (optional)</label>
-            <div className="input-wrap"><input placeholder="Utility / team" value={f.affiliation} onChange={set('affiliation')} /></div>
-          </div>
-        </div>
         <button className="btn-primary" disabled={loading}>
-          {loading ? <span className="spin" /> : null}{loading ? 'Energizing account…' : '⚡ Create Operator Account'}
+          {loading ? <span className="spin" /> : null}{loading ? 'Energizing account…' : '⚡ Create User Account'}
         </button>
       </form>
       <p className="switch-line">Already registered? <Link to="/login">Sign in</Link></p>

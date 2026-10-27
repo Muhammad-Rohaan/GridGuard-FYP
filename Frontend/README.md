@@ -13,7 +13,14 @@ POST /api/auth/logout        -> 204 (clears the cookie)
 The Vite development server proxies `/api` to `http://localhost:5000`. The JWT is
 kept in an HttpOnly cookie and is not exposed to browser JavaScript or local storage.
 For HTTPS deployments, set `gridguard.auth.cookie-secure=true`.
-The React app displays a separate dashboard for `USER` and `TECHNICAL_WORKER`.
+The React app displays a protected GridGuard dashboard for `USER` and
+`TECHNICAL_WORKER` accounts. Its animated canvas map shows one substation
+connected by a transmission line to a boxed residential area. Select either
+node on the map or in the node list; selecting the substation opens its
+protected `/substation/north-substation` details page, while selecting the
+residential area updates the dashboard details. Substation telemetry and
+configuration are placeholders for a future backend integration. Network
+readings and assets shown on the map are demonstration data.
 Public signup omits the role and therefore creates a `USER` account. For testing a
 technical-worker account through the API, include `"roles": "TECHNICAL_WORKER"` in
 the registration JSON. This registration endpoint is public, so role selection is
