@@ -64,12 +64,9 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/api/auth/login", "/api/auth/register-user", "/").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/reception/**").hasRole("RECEPTIONIST")
-                        .requestMatchers("/api/teacher/**").hasRole("TEACHER")
-                        .requestMatchers("/api/parent/**").hasRole("PARENT")
-                        .requestMatchers("/api/student/**").hasRole("STUDENT")
+                        .requestMatchers("/api/auth/login", "/api/auth/register-user", "/api/auth/logout", "/").permitAll()
+                        .requestMatchers("/api/user/**").hasRole("USER")
+                        .requestMatchers("/api/technical-worker/**").hasRole("TECHNICAL_WORKER")
                         .anyRequest().authenticated()
                 )
 
