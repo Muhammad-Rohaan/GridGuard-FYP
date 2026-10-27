@@ -29,22 +29,6 @@ public class SecurityConfig {
     private JwtUtil jwtUtil;
 
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {  /// this will allow not to use default spring-security filters instead of that use this one(filter)
-//        return httpSecurity
-//                .csrf(customizer -> customizer.disable())
-//                .authorizeHttpRequests(request ->
-//                        request
-//                                .requestMatchers("/login", "/register").permitAll()  // Open for all
-//                                .requestMatchers("/admin/**").hasRole("ADMIN")
-//                                .requestMatchers("/reception/**").hasRole("RECEPTIONIST")
-//                                .requestMatchers("/teacher/**").hasRole("TEACHER")
-//                                .requestMatchers("/student/**").hasRole("STUDENT")
-//                                .anyRequest().authenticated()
-//                                .and()
-//                                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .httpSecurity.build();
-//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

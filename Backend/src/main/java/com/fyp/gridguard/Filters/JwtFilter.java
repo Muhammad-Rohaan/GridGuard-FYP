@@ -35,11 +35,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String path = request.getRequestURI();
+        String path = request.getServletPath();
 //        System.out.println(">>> Filter checking path: " + path);
-        return path.equals("/")
-                || path.equals("/auth/register-user")
-                || path.startsWith("/auth/");
+        return path.equals("/api/auth/login")
+                || path.equals("/api/auth/register-user")
+                || path.equals("/api/auth/logout");
     }
 
 /// Working properly before Cookies implementation.
@@ -76,7 +76,6 @@ public class JwtFilter extends OncePerRequestFilter {
 protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
     try {
 
-    String authHeader = request.getHeader("Authorization");
     String token = getJwtTokenFromCookies(request);
 
     if (token != null) {
