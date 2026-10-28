@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @ToString
 public class Users {
 
-    @Id
+    @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
