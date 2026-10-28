@@ -3,13 +3,16 @@ import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import { apiLogout } from '../services/auth.js';
 import './dashboard.css';
 
+// Data describing the electicity network.
 const NODES = [
   { id: 'substation', label: 'North Substation', type: 'Substation', x: 0.18, y: 0.54, voltage: '132 kV', status: 'Online', color: '#27d8ed' },
   { id: 'residential', label: 'Residential Area', type: 'Residential area', x: 0.77, y: 0.54, voltage: '11 kV', status: 'Online', color: '#54d69a' },
 ];
 
+// Connection between substation -> area
 const CONNECTIONS = [['substation', 'residential']];
 
+// drawMap() -> Mathematical and graphical engine
 function drawMap(canvas, selectedId, time) {
   const context = canvas.getContext('2d');
   if (!context) return;
@@ -186,6 +189,7 @@ function drawMap(canvas, selectedId, time) {
   });
 }
 
+// GridCanvas() -> React component that manages the canvas and user interaction.
 function GridCanvas({ selectedId, onSelect, onNodeClick }) {
   const canvasRef = useRef(null);
   const selectedRef = useRef(selectedId);
@@ -274,10 +278,13 @@ function GridCanvas({ selectedId, onSelect, onNodeClick }) {
   );
 }
 
+// BoltMark() -> Small additional component that displays the lightning symbol.
 function BoltMark() {
   return <span className="gridguard-mark" aria-hidden="true">ϟ</span>;
 }
 
+/* Dashboard() -> Main page containing the header, statistics, map, details panel, and logout  
+functionality. */
 export default function Dashboard() {
   const { user } = useOutletContext();
   const navigate = useNavigate();
