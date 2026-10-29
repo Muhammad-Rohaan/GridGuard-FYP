@@ -37,6 +37,7 @@ public class SubstationController extends SubstationRoutes{
     }
 
     @Override
+    @PostMapping("/fetch-subs")
     public ResponseEntity<List<Substations>> fetchAllSubstations() { // Not performed API Testing
         try {
             List<Substations> substations = substationService.fetchAllSubstations();

@@ -1,5 +1,6 @@
 package com.fyp.gridguard.Models;
 
+import java.awt.geom.Area;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -28,14 +29,14 @@ public class LoadReading {  // Residential Power consumption, 5s of interval
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "load_id")
-    private Long loadId;
-    
-    @Column(name = "timestamp", nullable = false)
-    private LocalDateTime timestamp;
+    private Long id;
 
-    @Column(name = "power_consumption_kw", nullable = false)
-    private Double powerConsumptionKw;
+    @ManyToOne
+    @JoinColumn(name = "area_id")
+    private Areas area;                // always the single residential area
+
+    private LocalDateTime recordedAt; // 2017-01-01 00:00:00
+    private Double loadKw;            // 360.5
 
 
 
