@@ -46,4 +46,28 @@ public class SubstationService {
         }
     }
 
+    public boolean updateSubstation(Long substationId, SubstationsRequestDTO substationsRequestDTO) {
+        return substationRepo.findById(substationId)
+                .map(substation -> {
+                    substation.setCode(substationsRequestDTO.getCode());
+                    substation.setName(substationsRequestDTO.getName());
+                    substation.setSubProfileType(substationsRequestDTO.getSubProfileType());
+                    substation.setStatus(substationsRequestDTO.getStatus());
+                    substation.setCapacityKw(substationsRequestDTO.getCapacityKw());
+                    substation.setCurrentLoadKw(substationsRequestDTO.getCurrentLoadKw());
+                    substationRepo.save(substation);
+                    return true;
+                })
+                .orElse(false);
+    }
+
+    public boolean deleteSubstation(Long substationId) {
+        return substationRepo.findById(substationId)
+                .map(substation -> {
+                    substationRepo.delete(substation);
+                    return true;
+                })
+                .orElse(false);
+    }
+
 }
