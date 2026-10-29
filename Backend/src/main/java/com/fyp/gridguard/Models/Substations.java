@@ -38,12 +38,16 @@ public class Substations {
     @Column(nullable = false)
     private String status;
 
-    public Substations(String code, String name, String subProfileType, String status) {
+    private Double capacityKw;    // e.g. 5000.0
+
+    private Double currentLoadKw; // updated by tick engine
+
+    public Substations(String code, String name, String subProfileType, String status, Double capacityKw, Double currentLoadKw) {
         this.code = code;
         this.name = name;
         this.subProfileType = subProfileType;
         this.status = status;
+        this.capacityKw = capacityKw;
+        this.currentLoadKw = currentLoadKw;
     }
-
-
 }

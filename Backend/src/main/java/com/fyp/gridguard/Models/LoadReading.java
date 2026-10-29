@@ -24,7 +24,7 @@ import lombok.ToString;
 @AllArgsConstructor 
 @NoArgsConstructor 
 @ToString 
-public class LoadReading {  // Residential Power consumption
+public class LoadReading {  // Residential Power consumption, 5s of interval
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

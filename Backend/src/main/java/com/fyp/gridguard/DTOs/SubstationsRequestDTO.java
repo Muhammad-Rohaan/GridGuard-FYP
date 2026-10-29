@@ -14,4 +14,6 @@ public class SubstationsRequestDTO {
     private String name;
     private String subProfileType; // e.g., "RESIDENTIAL", "COMMERCIAL", "INDUSTRIAL", "MIXED"
     private String status;         // e.g., "HEALTHY", "WARNING", "CRITICAL"
+    private Double capacityKw;    // e.g. 5000.0
+    private Double currentLoadKw; // updated by tick engine
 }

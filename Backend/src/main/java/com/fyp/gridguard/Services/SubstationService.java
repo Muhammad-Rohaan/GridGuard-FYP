@@ -22,7 +22,10 @@ public class SubstationService {
                         substationsRequestDTO.getCode(),
                         substationsRequestDTO.getName(),
                         substationsRequestDTO.getSubProfileType(),
-                        substationsRequestDTO.getStatus());
+                        substationsRequestDTO.getStatus(),
+                        substationsRequestDTO.getCapacityKw(),
+                        substationsRequestDTO.getCurrentLoadKw()
+                );
                 substationRepo.save(newSubstation);
                 return "Substation Created";
             } else {

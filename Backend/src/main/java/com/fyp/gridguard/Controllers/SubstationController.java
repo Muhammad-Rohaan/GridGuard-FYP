@@ -14,6 +14,8 @@ import com.fyp.gridguard.Models.Substations;
 import com.fyp.gridguard.Routes.SubstationRoutes;
 import com.fyp.gridguard.Services.SubstationService;
 
+import java.util.List;
+
 
 @RestController 
 @RequestMapping("api/technical-worker/substations")
@@ -31,6 +33,17 @@ public class SubstationController extends SubstationRoutes{
             return ResponseEntity.status(200).body(response);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("ERROR in Registering Substation " + e);
+        }
+    }
+
+    @Override
+    public ResponseEntity<List<Substations>> fetchAllSubstations() { // Not performed API Testing
+        try {
+            List<Substations> substations = substationService.fetchAllSubstations();
+
+            return ResponseEntity.status(200).body(substations);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
