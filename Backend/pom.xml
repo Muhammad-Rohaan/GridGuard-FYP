@@ -115,6 +115,14 @@
   			 <version>3.11.1</version>
 		</dependency> -->
 
+		<!-- Source: https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>7.0.8</version>
+			<scope>compile</scope>
+		</dependency>
+
 
 
 	</dependencies>
