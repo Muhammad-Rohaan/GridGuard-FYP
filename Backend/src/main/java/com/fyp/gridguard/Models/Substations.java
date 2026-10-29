@@ -50,4 +50,6 @@ public class Substations {
         this.capacityKw = capacityKw;
         this.currentLoadKw = currentLoadKw;
     }
+
+
 }
