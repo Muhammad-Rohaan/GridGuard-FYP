@@ -5,15 +5,53 @@ import './dashboard.css';
 
 // Data describing the electicity network.
 const NODES = [
-  { id: 'substation', label: 'North Substation', type: 'Substation', x: 0.18, y: 0.54, voltage: '132 kV', status: 'Online', color: '#27d8ed' },
-  { id: 'residential', label: 'Residential Area', type: 'Residential area', x: 0.77, y: 0.54, voltage: '11 kV', status: 'Online', color: '#54d69a' },
+  { id: 'substation', label: 'North Substation', type: 'Substation', x: 0.22, y: 0.52, voltage: '132 kV', status: 'Online', color: '#27d8ed' },
+  { id: 'residential', label: 'Residential Area', type: 'Residential area', x: 0.77, y: 0.52, voltage: '11 kV', status: 'Online', color: '#54d69a' },
 ];
 
 // Connection between substation -> area
-const CONNECTIONS = [['substation', 'residential']];
+const CONNECTIONS = [['residential', 'substation']];
+const FLOW_CYCLE_MS = 10000;
+const FLOW_DOT_COUNT = 3;
+const LIVE_POLL_INTERVAL_MS = 5000;
+
+async function fetchLiveData(signal) {
+  const apiBase = import.meta.env.VITE_API_BASE_URL || '/api';
+  const response = await fetch(`${apiBase}/live`, {
+    credentials: 'include',
+    signal,
+  });
+  const contentType = response.headers.get('content-type') || '';
+  const payload = contentType.includes('application/json')
+    ? await response.json()
+    : await response.text();
+
+  if (!response.ok) {
+    const message = typeof payload === 'string' ? payload : payload.message || payload.error;
+    throw new Error(message || `Live data request failed (${response.status}).`);
+  }
+
+  const data = payload?.data;
+  const substation = data?.substations?.[0];
+  const area = substation?.areas?.[0];
+  if (payload?.success !== true || !substation || !area) {
+    throw new Error(payload?.message || 'Live data response is missing substation or area readings.');
+  }
+
+  return { simTime: data.simTime, substation, area };
+}
+
+function formatLoad(load) {
+  return Number.isFinite(load) ? `${load.toFixed(2)} kW` : '—';
+}
+
+function formatSimulationTime(simTime) {
+  const match = typeof simTime === 'string' ? simTime.match(/T(\d{2}:\d{2}(?::\d{2})?)/) : null;
+  return match?.[1] || 'Waiting for data';
+}
 
 // drawMap() -> Mathematical and graphical engine
-function drawMap(canvas, selectedId, time) {
+function drawMap(canvas, selectedId, time, powerConsumption) {
   const context = canvas.getContext('2d');
   if (!context) return;
 
@@ -46,6 +84,13 @@ function drawMap(canvas, selectedId, time) {
 
   const point = (node) => ({ x: node.x * width, y: node.y * height });
   const nodeById = Object.fromEntries(NODES.map((node) => [node.id, node]));
+  const connectionPoints = ([from, to]) => {
+    const start = point(nodeById[from]);
+    const end = point(nodeById[to]);
+    start.x -= Math.min(83, width * 0.145);
+    end.x += 15;
+    return { start, end };
+  };
 
   context.save();
   context.setLineDash([3, 10]);
@@ -53,10 +98,7 @@ function drawMap(canvas, selectedId, time) {
   context.lineWidth = 18;
   context.strokeStyle = 'rgba(123, 153, 159, 0.055)';
   CONNECTIONS.forEach(([from, to]) => {
-    const start = point(nodeById[from]);
-    const end = point(nodeById[to]);
-    start.x += 15;
-    end.x -= Math.min(83, width * 0.145);
+    const { start, end } = connectionPoints([from, to]);
     context.beginPath();
     context.moveTo(start.x, start.y);
     context.lineTo(end.x, end.y);
@@ -65,10 +107,7 @@ function drawMap(canvas, selectedId, time) {
   context.restore();
 
   CONNECTIONS.forEach(([from, to], index) => {
-    const start = point(nodeById[from]);
-    const end = point(nodeById[to]);
-    start.x += 15;
-    end.x -= Math.min(83, width * 0.145);
+    const { start, end } = connectionPoints([from, to]);
     context.beginPath();
     context.moveTo(start.x, start.y);
     context.lineTo(end.x, end.y);
@@ -96,16 +135,86 @@ function drawMap(canvas, selectedId, time) {
       context.stroke();
     }
 
-    const progress = (time * 0.00012 + index * 0.23) % 1;
-    const px = start.x + (end.x - start.x) * progress;
-    const py = start.y + (end.y - start.y) * progress;
-    context.beginPath();
-    context.arc(px, py, 3, 0, Math.PI * 2);
-    context.fillStyle = '#a4f5c5';
-    context.shadowColor = '#54d69a';
-    context.shadowBlur = 12;
-    context.fill();
-    context.shadowBlur = 0;
+    for (let dotIndex = 1; dotIndex < FLOW_DOT_COUNT; dotIndex += 1) {
+      const progress = (time / FLOW_CYCLE_MS + dotIndex / FLOW_DOT_COUNT + index * 0.23) % 1;
+      const px = start.x + (end.x - start.x) * progress;
+      const py = start.y + (end.y - start.y) * progress;
+      context.beginPath();
+      context.arc(px, py, 3, 0, Math.PI * 2);
+      context.fillStyle = '#a4f5c5';
+      context.shadowColor = '#54d69a';
+      context.shadowBlur = 12;
+      context.fill();
+      context.shadowBlur = 0;
+
+      if (dotIndex === 1 && Number.isFinite(powerConsumption)) {
+        const label = `${powerConsumption.toFixed(2)} kW`;
+        context.font = '600 10px Segoe UI, sans-serif';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        const labelWidth = context.measureText(label).width;
+        const labelHeight = 16;
+        const labelY = py - 23;
+        context.fillStyle = 'rgba(7, 18, 19, 0.9)';
+        context.fillRect(px - labelWidth / 2 - 5, labelY, labelWidth + 10, labelHeight);
+        context.fillStyle = '#b7eccf';
+        context.fillText(label, px, labelY + labelHeight / 2);
+      }
+    }
+
+    for (let dotIndex = 2; dotIndex < FLOW_DOT_COUNT; dotIndex += 1) {
+      const progress = (time / FLOW_CYCLE_MS + dotIndex / FLOW_DOT_COUNT + index * 0.23) % 1;
+      const px = start.x + (end.x - start.x) * progress;
+      const py = start.y + (end.y - start.y) * progress;
+      context.beginPath();
+      context.arc(px, py, 3, 0, Math.PI * 2);
+      context.fillStyle = '#a4f5c5';
+      context.shadowColor = '#54d69a';
+      context.shadowBlur = 12;
+      context.fill();
+      context.shadowBlur = 0;
+
+      if (dotIndex === 2 && Number.isFinite(powerConsumption)) {
+        const label = `${powerConsumption.toFixed(2)} kW`;
+        context.font = '600 10px Segoe UI, sans-serif';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        const labelWidth = context.measureText(label).width;
+        const labelHeight = 16;
+        const labelY = py - 23;
+        context.fillStyle = 'rgba(7, 18, 19, 0.9)';
+        context.fillRect(px - labelWidth / 2 - 5, labelY, labelWidth + 10, labelHeight);
+        context.fillStyle = '#b7eccf';
+        context.fillText(label, px, labelY + labelHeight / 2);
+      }
+    }
+
+    for (let dotIndex = 3; dotIndex < FLOW_DOT_COUNT; dotIndex += 1) {
+      const progress = (time / FLOW_CYCLE_MS + dotIndex / FLOW_DOT_COUNT + index * 0.23) % 1;
+      const px = start.x + (end.x - start.x) * progress;
+      const py = start.y + (end.y - start.y) * progress;
+      context.beginPath();
+      context.arc(px, py, 3, 0, Math.PI * 2);
+      context.fillStyle = '#a4f5c5';
+      context.shadowColor = '#54d69a';
+      context.shadowBlur = 12;
+      context.fill();
+      context.shadowBlur = 0;
+
+      if (dotIndex === 3 && Number.isFinite(powerConsumption)) {
+        const label = `${powerConsumption.toFixed(2)} kW`;
+        context.font = '600 10px Segoe UI, sans-serif';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        const labelWidth = context.measureText(label).width;
+        const labelHeight = 16;
+        const labelY = py - 23;
+        context.fillStyle = 'rgba(7, 18, 19, 0.9)';
+        context.fillRect(px - labelWidth / 2 - 5, labelY, labelWidth + 10, labelHeight);
+        context.fillStyle = '#b7eccf';
+        context.fillText(label, px, labelY + labelHeight / 2);
+      }
+    }
   });
 
   NODES.forEach((node) => {
@@ -190,9 +299,10 @@ function drawMap(canvas, selectedId, time) {
 }
 
 // GridCanvas() -> React component that manages the canvas and user interaction.
-function GridCanvas({ selectedId, onSelect, onNodeClick }) {
+function GridCanvas({ selectedId, onSelect, onNodeClick, powerConsumption }) {
   const canvasRef = useRef(null);
   const selectedRef = useRef(selectedId);
+  const powerConsumptionRef = useRef(powerConsumption);
   const focusedNodeRef = useRef(selectedId);
   const onSelectRef = useRef(onSelect);
   const onNodeClickRef = useRef(onNodeClick);
@@ -201,6 +311,7 @@ function GridCanvas({ selectedId, onSelect, onNodeClick }) {
     selectedRef.current = selectedId;
     focusedNodeRef.current = selectedId;
   }, [selectedId]);
+  useEffect(() => { powerConsumptionRef.current = powerConsumption; }, [powerConsumption]);
   useEffect(() => { onSelectRef.current = onSelect; }, [onSelect]);
   useEffect(() => { onNodeClickRef.current = onNodeClick; }, [onNodeClick]);
 
@@ -211,11 +322,16 @@ function GridCanvas({ selectedId, onSelect, onNodeClick }) {
 
     let frame;
     const render = (time) => {
-      drawMap(canvas, selectedRef.current, time);
+      drawMap(canvas, selectedRef.current, time, powerConsumptionRef.current);
       frame = window.requestAnimationFrame(render);
     };
     frame = window.requestAnimationFrame(render);
-    const observer = new ResizeObserver(() => drawMap(canvas, selectedRef.current, performance.now()));
+    const observer = new ResizeObserver(() => drawMap(
+      canvas,
+      selectedRef.current,
+      performance.now(),
+      powerConsumptionRef.current,
+    ));
     observer.observe(canvas);
 
     return () => {
@@ -291,7 +407,12 @@ export default function Dashboard() {
   const [selectedId, setSelectedId] = useState('residential');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [liveData, setLiveData] = useState(null);
+  const [liveError, setLiveError] = useState('');
   const selectedNode = NODES.find((node) => node.id === selectedId) || NODES[0];
+  const selectedLoad = selectedId === 'substation'
+    ? liveData?.substation.currentLoadKw
+    : liveData?.area.currentLoadKw;
   const connectedNodes = CONNECTIONS
     .filter(([from, to]) => from === selectedId || to === selectedId)
     .map(([from, to]) => NODES.find((node) => node.id === (from === selectedId ? to : from))?.label)
@@ -302,6 +423,38 @@ export default function Dashboard() {
     .join('')
     .slice(0, 2)
     .toUpperCase();
+
+  useEffect(() => {
+    let active = true;
+    let timeout;
+    let controller;
+
+    const pollLiveData = async () => {
+      controller = new AbortController();
+      try {
+        const nextLiveData = await fetchLiveData(controller.signal);
+        if (active) {
+          setLiveData(nextLiveData);
+          setLiveError('');
+        }
+      } catch (liveRequestError) {
+        if (active && liveRequestError.name !== 'AbortError') {
+          setLiveError(liveRequestError.message);
+        }
+      } finally {
+        if (active) {
+          timeout = window.setTimeout(pollLiveData, LIVE_POLL_INTERVAL_MS);
+        }
+      }
+    };
+
+    pollLiveData();
+    return () => {
+      active = false;
+      window.clearTimeout(timeout);
+      controller?.abort();
+    };
+  }, []);
 
   const handleLogout = async () => {
     setError('');
@@ -351,13 +504,16 @@ export default function Dashboard() {
             <h1>Good to see you, {user.name.split(/\s+/)[0]}.</h1>
             <p className="intro-copy">A live view of the network powering your community.</p>
           </div>
-          <div className="network-pill"><span className="status-dot" /> NETWORK CONNECTED</div>
+          <div className="network-pill" aria-live="polite">
+            <span className="status-dot" />
+            {liveError ? 'LIVE DATA STALE' : liveData ? 'NETWORK LIVE' : 'CONNECTING'}
+          </div>
         </section>
 
         <section className="network-summary" aria-label="Network summary">
           <div className="summary-card">
             <span className="summary-icon summary-icon-green">↗</span>
-            <div><span className="summary-label">GRID STATUS</span><strong>All systems normal</strong></div>
+            <div><span className="summary-label">SIMULATION TIME</span><strong>{formatSimulationTime(liveData?.simTime)}</strong></div>
             <span className="summary-live">LIVE</span>
           </div>
           <div className="summary-card">
@@ -366,7 +522,7 @@ export default function Dashboard() {
           </div>
           <div className="summary-card">
             <span className="summary-icon summary-icon-amber">ϟ</span>
-            <div><span className="summary-label">GRID FREQUENCY</span><strong>50.02 <small>Hz</small></strong></div>
+            <div><span className="summary-label">AREA LOAD</span><strong>{formatLoad(liveData?.area.currentLoadKw)}</strong></div>
           </div>
         </section>
 
@@ -385,7 +541,12 @@ export default function Dashboard() {
                 <span><span className="status-dot" /> GRID OVERVIEW</span>
                 <span>RIVERSIDE DISTRICT <span className="map-separator">/</span> ZONE 04</span>
               </div>
-              <GridCanvas selectedId={selectedId} onSelect={setSelectedId} onNodeClick={handleNodeClick} />
+              <GridCanvas
+                selectedId={selectedId}
+                onSelect={setSelectedId}
+                onNodeClick={handleNodeClick}
+                powerConsumption={liveData?.area.currentLoadKw}
+              />
               <div className="map-coordinates">33°41' N&nbsp;&nbsp; 73°03' E</div>
             </div>
 
@@ -399,7 +560,7 @@ export default function Dashboard() {
                 <div><strong>{selectedNode.label}</strong><span>{selectedNode.type}</span></div>
               </div>
               <div className="detail-row"><span>Operating status</span><strong className="detail-online">{selectedNode.status}</strong></div>
-              <div className="detail-row"><span>Rated voltage</span><strong>{selectedNode.voltage}</strong></div>
+              <div className="detail-row"><span>Power Consumption</span><strong>{formatLoad(selectedLoad)}</strong></div>
               <div className="detail-row"><span>Connected to</span><strong>{connectedNodes.join(', ')}</strong></div>
               <div className="node-picker">
                 <span className="summary-label">NETWORK NODES</span>
@@ -420,6 +581,7 @@ export default function Dashboard() {
             </aside>
           </div>
           {error && <p className="dashboard-error" role="alert">{error}</p>}
+          {liveError && <p className="dashboard-error" role="alert">{liveError}</p>}
         </section>
         <footer className="dashboard-footer"><span>GRIDGUARD COMMUNITY GRID</span><span>Network data is for demonstration purposes.</span></footer>
       </div>
