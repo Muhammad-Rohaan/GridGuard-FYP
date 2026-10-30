@@ -14,6 +14,9 @@ const CONNECTIONS = [['residential', 'substation']];
 const FLOW_CYCLE_MS = 10000;
 const FLOW_DOT_COUNT = 3;
 const LIVE_POLL_INTERVAL_MS = 5000;
+const MIN_MAP_ZOOM = 1;
+const MAX_MAP_ZOOM = 2.4;
+const MAP_ZOOM_STEP = 0.2;
 
 async function fetchLiveData(signal) {
   const apiBase = import.meta.env.VITE_API_BASE_URL || '/api';
@@ -45,13 +48,15 @@ function formatLoad(load) {
   return Number.isFinite(load) ? `${load.toFixed(2)} kW` : '—';
 }
 
-function formatSimulationTime(simTime) {
-  const match = typeof simTime === 'string' ? simTime.match(/T(\d{2}:\d{2}(?::\d{2})?)/) : null;
-  return match?.[1] || 'Waiting for data';
+function splitSimulationDateTime(simTime) {
+  const match = typeof simTime === 'string'
+    ? simTime.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}(?::\d{2})?)/)
+    : null;
+  return match ? { date: match[1], time: match[2] } : null;
 }
 
 // drawMap() -> Mathematical and graphical engine
-function drawMap(canvas, selectedId, time, powerConsumption) {
+function drawMap(canvas, selectedId, time, powerConsumption, zoom) {
   const context = canvas.getContext('2d');
   if (!context) return;
 
@@ -81,6 +86,11 @@ function drawMap(canvas, selectedId, time, powerConsumption) {
     context.lineTo(width, y);
     context.stroke();
   }
+
+  context.save();
+  context.translate(width / 2, height / 2);
+  context.scale(zoom, zoom);
+  context.translate(-width / 2, -height / 2);
 
   const point = (node) => ({ x: node.x * width, y: node.y * height });
   const nodeById = Object.fromEntries(NODES.map((node) => [node.id, node]));
@@ -149,14 +159,14 @@ function drawMap(canvas, selectedId, time, powerConsumption) {
 
       if (dotIndex === 1 && Number.isFinite(powerConsumption)) {
         const label = `${powerConsumption.toFixed(2)} kW`;
-        context.font = '600 10px Segoe UI, sans-serif';
+        context.font = '600 12px Segoe UI, sans-serif';
         context.textAlign = 'center';
         context.textBaseline = 'middle';
         const labelWidth = context.measureText(label).width;
-        const labelHeight = 16;
-        const labelY = py - 23;
+        const labelHeight = 19;
+        const labelY = py - 27;
         context.fillStyle = 'rgba(7, 18, 19, 0.9)';
-        context.fillRect(px - labelWidth / 2 - 5, labelY, labelWidth + 10, labelHeight);
+        context.fillRect(px - labelWidth / 2 - 6, labelY, labelWidth + 12, labelHeight);
         context.fillStyle = '#b7eccf';
         context.fillText(label, px, labelY + labelHeight / 2);
       }
@@ -176,14 +186,14 @@ function drawMap(canvas, selectedId, time, powerConsumption) {
 
       if (dotIndex === 2 && Number.isFinite(powerConsumption)) {
         const label = `${powerConsumption.toFixed(2)} kW`;
-        context.font = '600 10px Segoe UI, sans-serif';
+        context.font = '600 12px Segoe UI, sans-serif';
         context.textAlign = 'center';
         context.textBaseline = 'middle';
         const labelWidth = context.measureText(label).width;
-        const labelHeight = 16;
-        const labelY = py - 23;
+        const labelHeight = 19;
+        const labelY = py - 27;
         context.fillStyle = 'rgba(7, 18, 19, 0.9)';
-        context.fillRect(px - labelWidth / 2 - 5, labelY, labelWidth + 10, labelHeight);
+        context.fillRect(px - labelWidth / 2 - 6, labelY, labelWidth + 12, labelHeight);
         context.fillStyle = '#b7eccf';
         context.fillText(label, px, labelY + labelHeight / 2);
       }
@@ -203,14 +213,14 @@ function drawMap(canvas, selectedId, time, powerConsumption) {
 
       if (dotIndex === 3 && Number.isFinite(powerConsumption)) {
         const label = `${powerConsumption.toFixed(2)} kW`;
-        context.font = '600 10px Segoe UI, sans-serif';
+        context.font = '600 12px Segoe UI, sans-serif';
         context.textAlign = 'center';
         context.textBaseline = 'middle';
         const labelWidth = context.measureText(label).width;
-        const labelHeight = 16;
-        const labelY = py - 23;
+        const labelHeight = 19;
+        const labelY = py - 27;
         context.fillStyle = 'rgba(7, 18, 19, 0.9)';
-        context.fillRect(px - labelWidth / 2 - 5, labelY, labelWidth + 10, labelHeight);
+        context.fillRect(px - labelWidth / 2 - 6, labelY, labelWidth + 12, labelHeight);
         context.fillStyle = '#b7eccf';
         context.fillText(label, px, labelY + labelHeight / 2);
       }
@@ -296,6 +306,7 @@ function drawMap(canvas, selectedId, time, powerConsumption) {
     context.fillStyle = selected ? '#f0f7f5' : '#b4c6c6';
     context.fillText('NORTH SUBSTATION', x, y + radius + 14);
   });
+  context.restore();
 }
 
 // GridCanvas() -> React component that manages the canvas and user interaction.
@@ -303,6 +314,8 @@ function GridCanvas({ selectedId, onSelect, onNodeClick, powerConsumption }) {
   const canvasRef = useRef(null);
   const selectedRef = useRef(selectedId);
   const powerConsumptionRef = useRef(powerConsumption);
+  const [zoom, setZoom] = useState(MIN_MAP_ZOOM);
+  const zoomRef = useRef(zoom);
   const focusedNodeRef = useRef(selectedId);
   const onSelectRef = useRef(onSelect);
   const onNodeClickRef = useRef(onNodeClick);
@@ -322,7 +335,7 @@ function GridCanvas({ selectedId, onSelect, onNodeClick, powerConsumption }) {
 
     let frame;
     const render = (time) => {
-      drawMap(canvas, selectedRef.current, time, powerConsumptionRef.current);
+      drawMap(canvas, selectedRef.current, time, powerConsumptionRef.current, zoomRef.current);
       frame = window.requestAnimationFrame(render);
     };
     frame = window.requestAnimationFrame(render);
@@ -331,6 +344,7 @@ function GridCanvas({ selectedId, onSelect, onNodeClick, powerConsumption }) {
       selectedRef.current,
       performance.now(),
       powerConsumptionRef.current,
+      zoomRef.current,
     ));
     observer.observe(canvas);
 
@@ -344,8 +358,8 @@ function GridCanvas({ selectedId, onSelect, onNodeClick, powerConsumption }) {
     const canvas = canvasRef.current;
     if (!canvas) return null;
     const bounds = canvas.getBoundingClientRect();
-    const x = (event.clientX - bounds.left) / bounds.width;
-    const y = (event.clientY - bounds.top) / bounds.height;
+    const x = ((event.clientX - bounds.left) / bounds.width - 0.5) / zoomRef.current + 0.5;
+    const y = ((event.clientY - bounds.top) / bounds.height - 0.5) / zoomRef.current + 0.5;
     return NODES.find((item) => {
       if (item.id === 'residential') {
         return Math.abs(item.x - x) * bounds.width < Math.min(83, bounds.width * 0.145)
@@ -363,34 +377,65 @@ function GridCanvas({ selectedId, onSelect, onNodeClick, powerConsumption }) {
     }
   };
 
+  const adjustZoom = (change) => {
+    setZoom((currentZoom) => {
+      const nextZoom = Math.min(MAX_MAP_ZOOM, Math.max(MIN_MAP_ZOOM, currentZoom + change));
+      zoomRef.current = nextZoom;
+      return nextZoom;
+    });
+  };
+
   return (
-    <canvas
-      ref={canvasRef}
-      className="grid-map-canvas"
-      aria-label={`Grid map. Selected ${NODES.find((node) => node.id === focusedNodeRef.current)?.label}. Use arrow keys to choose a node and Enter to open it.`}
-      onClick={selectAtPointer}
-      onMouseMove={(event) => {
-        event.currentTarget.style.cursor = nodeAtPointer(event) ? 'pointer' : 'crosshair';
-      }}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          onNodeClickRef.current(focusedNodeRef.current);
-          return;
-        }
-        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-          event.preventDefault();
-          const currentIndex = NODES.findIndex((node) => node.id === focusedNodeRef.current);
-          const direction = event.key === 'ArrowLeft' || event.key === 'ArrowUp' ? -1 : 1;
-          const nextNode = NODES[(currentIndex + direction + NODES.length) % NODES.length];
-          focusedNodeRef.current = nextNode.id;
-          selectedRef.current = nextNode.id;
-          onSelectRef.current(nextNode.id);
-        }
-      }}
-      role="group"
-      tabIndex={0}
-    />
+    <>
+      <canvas
+        ref={canvasRef}
+        className="grid-map-canvas"
+        aria-label={`Grid map. Selected ${NODES.find((node) => node.id === focusedNodeRef.current)?.label}. Use arrow keys to choose a node and Enter to open it.`}
+        onClick={selectAtPointer}
+        onMouseMove={(event) => {
+          event.currentTarget.style.cursor = nodeAtPointer(event) ? 'pointer' : 'crosshair';
+        }}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            onNodeClickRef.current(focusedNodeRef.current);
+            return;
+          }
+          if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+            event.preventDefault();
+            const currentIndex = NODES.findIndex((node) => node.id === focusedNodeRef.current);
+            const direction = event.key === 'ArrowLeft' || event.key === 'ArrowUp' ? -1 : 1;
+            const nextNode = NODES[(currentIndex + direction + NODES.length) % NODES.length];
+            focusedNodeRef.current = nextNode.id;
+            selectedRef.current = nextNode.id;
+            onSelectRef.current(nextNode.id);
+          }
+        }}
+        role="group"
+        tabIndex={0}
+      />
+      <div className="map-zoom-controls" role="group" aria-label="Map zoom controls">
+        <button
+          type="button"
+          onClick={() => adjustZoom(MAP_ZOOM_STEP)}
+          disabled={zoom >= MAX_MAP_ZOOM}
+          aria-label="Zoom in"
+          title="Zoom in"
+        >
+          +
+        </button>
+        <span aria-live="polite">{Math.round(zoom * 100)}%</span>
+        <button
+          type="button"
+          onClick={() => adjustZoom(-MAP_ZOOM_STEP)}
+          disabled={zoom <= MIN_MAP_ZOOM}
+          aria-label="Zoom out"
+          title="Zoom out"
+        >
+          −
+        </button>
+      </div>
+    </>
   );
 }
 
@@ -409,6 +454,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [liveData, setLiveData] = useState(null);
   const [liveError, setLiveError] = useState('');
+  const simulationDateTime = splitSimulationDateTime(liveData?.simTime);
   const selectedNode = NODES.find((node) => node.id === selectedId) || NODES[0];
   const selectedLoad = selectedId === 'substation'
     ? liveData?.substation.currentLoadKw
@@ -513,7 +559,11 @@ export default function Dashboard() {
         <section className="network-summary" aria-label="Network summary">
           <div className="summary-card">
             <span className="summary-icon summary-icon-green">↗</span>
-            <div><span className="summary-label">SIMULATION TIME</span><strong>{formatSimulationTime(liveData?.simTime)}</strong></div>
+            <div className="simulation-time">
+              <span className="summary-label">SIMULATION TIME</span>
+              <strong>{simulationDateTime?.time || 'Waiting for data'}</strong>
+              {simulationDateTime && <span className="simulation-date">{simulationDateTime.date}</span>}
+            </div>
             <span className="summary-live">LIVE</span>
           </div>
           <div className="summary-card">
