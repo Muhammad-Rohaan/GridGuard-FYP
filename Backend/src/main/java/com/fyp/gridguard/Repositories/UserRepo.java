@@ -12,8 +12,6 @@ public interface UserRepo extends JpaRepository<Users, Long> {
 
     Users findByEmail(String email);
 
-    @Query(value = "select full_name, roles from users where roles='ADMIN'", nativeQuery = true)
-    List<String> findByAdminName();
 
 
 

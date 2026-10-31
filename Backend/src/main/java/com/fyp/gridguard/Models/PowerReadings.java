@@ -23,7 +23,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class PowerReadings {
+public class PowerReadings { // Substation reading
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
