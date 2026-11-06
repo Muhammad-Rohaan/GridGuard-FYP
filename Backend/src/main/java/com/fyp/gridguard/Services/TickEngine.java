@@ -96,7 +96,7 @@ public class TickEngine {
         }
     }
 
-    @Scheduled(fixedDelay = 5000)   // every 5 real seconds
+    @Scheduled(fixedDelay = 5000)
     @Transactional
     public void tick() {
 
@@ -114,14 +114,13 @@ public class TickEngine {
         }
         Areas area = areas.get(0);
 
-        // 3. Find matching reading
         Optional<LoadReading> reading = loadReadingRepository
                 .findByAreaIdAndRecordedAt(area.getId(), currentSimTime);
 
         if (reading.isPresent()) {
             Double load = reading.get().getLoadKw();
 
-            // 4. Update Area
+            // Update Area
             area.setCurrentLoadKw(load);
             area.setUpdatedAt(LocalDateTime.now());
             areaRepository.save(area);
