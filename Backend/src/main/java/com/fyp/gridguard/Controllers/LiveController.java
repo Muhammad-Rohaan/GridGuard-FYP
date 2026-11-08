@@ -1,10 +1,13 @@
 package com.fyp.gridguard.Controllers;
 
 import com.fyp.gridguard.Models.Areas;
+import com.fyp.gridguard.Models.LoadReading;
 import com.fyp.gridguard.Models.Substations;
 import com.fyp.gridguard.Repositories.AreaRepo;
 import com.fyp.gridguard.Repositories.SubstationRepo;
 import com.fyp.gridguard.Services.SimulationClock;
+import com.fyp.gridguard.Services.TestSimulation;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,11 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class LiveController {
+
+    private final TestSimulation testSimulation;
 
     private final AreaRepo areaRepository;
     private final SubstationRepo substationRepository;
@@ -70,4 +77,15 @@ public class LiveController {
 
         return ResponseEntity.ok(response);
     }
+
+
+    @GetMapping("/test")
+    public ResponseEntity<List<LoadReading>> findByDateTime() {
+        List<LoadReading> response = testSimulation.findByDateTime();
+        return ResponseEntity.ok(response);
+    }
+    
+
+
+
 }

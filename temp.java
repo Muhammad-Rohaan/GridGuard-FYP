@@ -9,7 +9,7 @@ public class temp {
         LocalDateTime dt = LocalDateTime.now();
 
         // Format without year: MM-DD HH:mm:ss
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd HH");
         String result = dt.format(formatter);
 
         System.out.println(result);
