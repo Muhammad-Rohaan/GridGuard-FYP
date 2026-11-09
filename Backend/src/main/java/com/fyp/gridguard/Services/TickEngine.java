@@ -56,6 +56,9 @@ package com.fyp.gridguard.Services;
 //}
 /// ------------------------------------------------
 
+/*
+
+
 import com.fyp.gridguard.Models.Areas;
 import com.fyp.gridguard.Models.LoadReading;
 import com.fyp.gridguard.Models.Substations;
@@ -78,11 +81,11 @@ import java.util.Optional;
 @Slf4j
 public class TickEngine {
 
-    private final SimulationClock clock;
+private final SimulationClock clock;
     private final AreaRepo areaRepository;
     private final SubstationRepo substationRepository;
     private final LoadReadingRepo loadReadingRepository;
-
+    
     @PostConstruct
     public void init() {
         // Start from the first timestamp of your dataset
@@ -92,20 +95,20 @@ public class TickEngine {
             log.info("Simulation started at: {}", clock.now());
         } else {
             clock.set(LocalDateTime.of(2017, 1, 1, 0, 0));
-            log.warn("No data found in load_readings. Using default time.");
-        }
+        log.warn("No data found in load_readings. Using default time.");
     }
+}
 
-    @Scheduled(fixedDelay = 5000)
-    @Transactional
-    public void tick() {
-
-        // 1. Advance simulation time by 5 minutes
-        clock.advance(5);
+@Scheduled(fixedDelay = 5000)
+@Transactional
+public void tick() {
+    
+// 1. Advance simulation time by 5 minutes
+clock.advance(5);
         LocalDateTime currentSimTime = clock.now();
-
+        
         log.info("Tick running → Simulation Time: {}", currentSimTime);
-
+        
         // 2. Get the single area
         List<Areas> areas = areaRepository.findAll();
         if (areas.isEmpty()) {
@@ -115,8 +118,8 @@ public class TickEngine {
         Areas area = areas.get(0);
 
         Optional<LoadReading> reading = loadReadingRepository
-                .findByAreaIdAndRecordedAt(area.getId(), currentSimTime);
-
+        .findByAreaIdAndRecordedAt(area.getId(), currentSimTime);
+        
         if (reading.isPresent()) {
             Double load = reading.get().getLoadKw();
 
@@ -131,10 +134,13 @@ public class TickEngine {
                 substation.setCurrentLoadKw(load);
                 substationRepository.save(substation);
             }
-
+            
             log.info("Updated Load → {} kW", load);
         } else {
             log.warn("No reading found for time: {}", currentSimTime);
         }
     }
 }
+    
+
+*/

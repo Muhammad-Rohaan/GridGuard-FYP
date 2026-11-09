@@ -3,18 +3,16 @@ import psycopg2
 from psycopg2.extras import execute_values
 from datetime import datetime
 
-# ====================== CONFIG ======================
 DB_CONFIG = {
     "host": "localhost",
     "port": 5432,
     "dbname": "GridGuard",
     "user": "postgres",
-    "password": "0000"          # <-- change this
+    "password": "0000"          
 }
 
-CSV_FILE = "data/Electric PowerLoad Data_CSVs/Residential/5_min_Residential.csv"                # your CSV file path
-AREA_CODE = "AREA-R1"                   # the single residential area
-# ====================================================
+CSV_FILE = "data/Electric PowerLoad Data_CSVs/Residential/average_3year_power_5min.csv"
+AREA_CODE = "AREA-R1"
 
 def main():
     print("Connecting to PostgreSQL...")

@@ -31,17 +31,20 @@ public class LiveController {
     private final SubstationRepo substationRepository;
     private final SimulationClock clock;
 
-    @GetMapping("/live")
-    public ResponseEntity<?> getLiveData() {
+/*
 
-        List<Areas> areas = areaRepository.findAll();
-        List<Substations> substations = substationRepository.findAll();
+
+@GetMapping("/live")
+public ResponseEntity<?> getLiveData() {
+    
+List<Areas> areas = areaRepository.findAll();
+List<Substations> substations = substationRepository.findAll();
 
         if (areas.isEmpty() || substations.isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of(
-                    "success", false,
+                "success", false,
                     "message", "No area or substation found in database"
-            ));
+                ));
         }
 
         Areas area = areas.get(0);
@@ -55,7 +58,7 @@ public class LiveController {
         areaData.put("type", area.getType());
         areaData.put("currentLoadKw", area.getCurrentLoadKw() != null ? area.getCurrentLoadKw() : 0.0);
         areaData.put("mine", true);
-
+        
         // Substation data
         Map<String, Object> substationData = new HashMap<>();
         substationData.put("id", substation.getSubstationId());
@@ -64,28 +67,30 @@ public class LiveController {
         substationData.put("capacityKw", substation.getCapacityKw());
         substationData.put("currentLoadKw", substation.getCurrentLoadKw() != null ? substation.getCurrentLoadKw() : 0.0);
         substationData.put("areas", List.of(areaData));
-
+        
         // Final response (using HashMap instead of Map.of to avoid null issues)
         Map<String, Object> data = new HashMap<>();
         data.put("simTime", clock.now() != null ? clock.now().toString() : "not-initialized");
         data.put("mode", "REPLAY");
         data.put("substations", List.of(substationData));
-
+        
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
         response.put("data", data);
-
+        
         return ResponseEntity.ok(response);
     }
-
-
-    @GetMapping("/test")
+    
+    
+*/
+    
+    @GetMapping("/live")
     public ResponseEntity<List<LoadReading>> findByDateTime() {
         List<LoadReading> response = testSimulation.findByDateTime();
         return ResponseEntity.ok(response);
     }
     
-
-
-
+    
+    
+    
 }
