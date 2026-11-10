@@ -15,8 +15,8 @@ public class TestSimulation {
     @Autowired 
     private LoadReadingRepo loadReadingRepo;
 
-    public List<LoadReading> findByDateTime() {
-        return loadReadingRepo.findByDateTime();
+    public List<LoadReading> findByDateTime(String userCurrentDateTime) {
+        return loadReadingRepo.findByDateTime(userCurrentDateTime);
     }
 
 

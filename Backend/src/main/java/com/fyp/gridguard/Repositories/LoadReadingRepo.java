@@ -3,6 +3,7 @@ package com.fyp.gridguard.Repositories;
 import com.fyp.gridguard.Models.LoadReading;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -39,8 +40,8 @@ public interface LoadReadingRepo extends JpaRepository<LoadReading, Long> {
     Optional<LocalDateTime> findMinRecordedAt();
 
     @Query(value = """
-            SELECT * FROM load_readings WHERE TO_CHAR(recorded_at, 'MM-DD HH24') = '11-09 04';
+            SELECT * FROM load_readings WHERE TO_CHAR(recorded_at, 'MM-DD HH24') = :dateTime;
             """, nativeQuery = true)
-    List<LoadReading> findByDateTime(/*LocalDateTime localDateTime*/);
+    List<LoadReading> findByDateTime(@Param("dateTime") String dateTime);
 
 }
