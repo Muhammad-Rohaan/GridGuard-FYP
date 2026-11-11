@@ -26,8 +26,13 @@ public class SubstationService {
                         substationsRequestDTO.getCapacityKw(),
                         substationsRequestDTO.getCurrentLoadKw()
                 );
-                substationRepo.save(newSubstation);
-                return "Substation Created";
+                if (substationRepo.count() < 3) {
+                    substationRepo.save(newSubstation);
+                    System.out.println(substationRepo.count());
+                    return "Substation Created";
+                } else {
+                    return "Already 3 Substation Exists";
+                }
             } else {
                 return "Send all values.";
             }
