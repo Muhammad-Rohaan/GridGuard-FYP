@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import { apiLogout } from '../services/auth.js';
+import { useLiveTelemetry } from '../services/LiveTelemetryProvider.jsx';
 import './dashboard.css';
 
 // Data describing the electicity network.
@@ -13,41 +14,16 @@ const NODES = [
 const CONNECTIONS = [['residential', 'substation']];
 const FLOW_CYCLE_MS = 10000;
 const FLOW_DOT_COUNT = 3;
-const LIVE_POLL_INTERVAL_MS = 5000;
 const MIN_MAP_ZOOM = 1;
 const MAX_MAP_ZOOM = 2.4;
 const MAP_ZOOM_STEP = 0.2;
 
-async function fetchLiveData(signal) {
-  const apiBase = import.meta.env.VITE_API_BASE_URL || '/api';
-  const response = await fetch(`${apiBase}/live`, {
-    credentials: 'include',
-    signal,
-  });
-  const contentType = response.headers.get('content-type') || '';
-  const payload = contentType.includes('application/json')
-    ? await response.json()
-    : await response.text();
-
-  if (!response.ok) {
-    const message = typeof payload === 'string' ? payload : payload.message || payload.error;
-    throw new Error(message || `Live data request failed (${response.status}).`);
-  }
-
-  const data = payload?.data;
-  const substation = data?.substations?.[0];
-  const area = substation?.areas?.[0];
-  if (payload?.success !== true || !substation || !area) {
-    throw new Error(payload?.message || 'Live data response is missing substation or area readings.');
-  }
-
-  return { simTime: data.simTime, substation, area };
-}
-
+// Formats a numeric load for the network summary and selected-node panel.
 function formatLoad(load) {
   return Number.isFinite(load) ? `${load.toFixed(2)} kW` : '—';
 }
 
+// Splits the simulation timestamp into the date and time shown in the dashboard.
 function splitSimulationDateTime(simTime) {
   const match = typeof simTime === 'string'
     ? simTime.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}(?::\d{2})?)/)
@@ -55,8 +31,8 @@ function splitSimulationDateTime(simTime) {
   return match ? { date: match[1], time: match[2] } : null;
 }
 
-// drawMap() -> Mathematical and graphical engine
-function drawMap(canvas, selectedId, time, powerConsumption, zoom) {
+// Draws the interactive network canvas using backend-provided node labels and load.
+function drawMap(canvas, nodes, selectedId, time, powerConsumption, zoom) {
   const context = canvas.getContext('2d');
   if (!context) return;
 
@@ -92,8 +68,10 @@ function drawMap(canvas, selectedId, time, powerConsumption, zoom) {
   context.scale(zoom, zoom);
   context.translate(-width / 2, -height / 2);
 
+  // Converts each node's normalized coordinates into canvas pixels.
   const point = (node) => ({ x: node.x * width, y: node.y * height });
-  const nodeById = Object.fromEntries(NODES.map((node) => [node.id, node]));
+  const nodeById = Object.fromEntries(nodes.map((node) => [node.id, node]));
+  // Calculates the connection endpoints so the animated line meets each node.
   const connectionPoints = ([from, to]) => {
     const start = point(nodeById[from]);
     const end = point(nodeById[to]);
@@ -227,7 +205,7 @@ function drawMap(canvas, selectedId, time, powerConsumption, zoom) {
     }
   });
 
-  NODES.forEach((node) => {
+  nodes.forEach((node) => {
     const { x, y } = point(node);
     const selected = node.id === selectedId;
     const pulse = 0.5 + Math.sin(time * 0.002 + node.x * 8) * 0.5;
@@ -248,7 +226,7 @@ function drawMap(canvas, selectedId, time, powerConsumption, zoom) {
       context.textAlign = 'left';
       context.textBaseline = 'middle';
       context.fillStyle = '#b7eccf';
-      context.fillText('RESIDENTIAL AREA', boxX + 9, boxY + 12);
+      context.fillText(node.label.toLocaleUpperCase(), boxX + 9, boxY + 12, boxWidth - 18);
 
       const houseY = boxY + 43;
       const houseGap = Math.min(37, (boxWidth - 28) / 3);
@@ -304,14 +282,15 @@ function drawMap(canvas, selectedId, time, powerConsumption, zoom) {
     context.textAlign = 'center';
     context.textBaseline = 'top';
     context.fillStyle = selected ? '#f0f7f5' : '#b4c6c6';
-    context.fillText('NORTH SUBSTATION', x, y + radius + 14);
+    context.fillText(node.label.toLocaleUpperCase(), x, y + radius + 14, width * 0.3);
   });
   context.restore();
 }
 
-// GridCanvas() -> React component that manages the canvas and user interaction.
-function GridCanvas({ selectedId, onSelect, onNodeClick, powerConsumption }) {
+// Keeps the canvas animation, selection, zoom, and pointer handling in sync.
+function GridCanvas({ nodes, selectedId, onSelect, onNodeClick, powerConsumption }) {
   const canvasRef = useRef(null);
+  const nodesRef = useRef(nodes);
   const selectedRef = useRef(selectedId);
   const powerConsumptionRef = useRef(powerConsumption);
   const [zoom, setZoom] = useState(MIN_MAP_ZOOM);
@@ -320,6 +299,9 @@ function GridCanvas({ selectedId, onSelect, onNodeClick, powerConsumption }) {
   const onSelectRef = useRef(onSelect);
   const onNodeClickRef = useRef(onNodeClick);
 
+  useEffect(() => {
+    nodesRef.current = nodes;
+  }, [nodes]);
   useEffect(() => {
     selectedRef.current = selectedId;
     focusedNodeRef.current = selectedId;
@@ -334,13 +316,15 @@ function GridCanvas({ selectedId, onSelect, onNodeClick, powerConsumption }) {
     if (!canvas || !context) return undefined;
 
     let frame;
+    // Redraws the network on animation frames using the latest props.
     const render = (time) => {
-      drawMap(canvas, selectedRef.current, time, powerConsumptionRef.current, zoomRef.current);
+      drawMap(canvas, nodesRef.current, selectedRef.current, time, powerConsumptionRef.current, zoomRef.current);
       frame = window.requestAnimationFrame(render);
     };
     frame = window.requestAnimationFrame(render);
     const observer = new ResizeObserver(() => drawMap(
       canvas,
+      nodesRef.current,
       selectedRef.current,
       performance.now(),
       powerConsumptionRef.current,
@@ -354,13 +338,14 @@ function GridCanvas({ selectedId, onSelect, onNodeClick, powerConsumption }) {
     };
   }, []);
 
+  // Finds the network node under the pointer, accounting for the current zoom.
   const nodeAtPointer = (event) => {
     const canvas = canvasRef.current;
     if (!canvas) return null;
     const bounds = canvas.getBoundingClientRect();
     const x = ((event.clientX - bounds.left) / bounds.width - 0.5) / zoomRef.current + 0.5;
     const y = ((event.clientY - bounds.top) / bounds.height - 0.5) / zoomRef.current + 0.5;
-    return NODES.find((item) => {
+    return nodesRef.current.find((item) => {
       if (item.id === 'residential') {
         return Math.abs(item.x - x) * bounds.width < Math.min(83, bounds.width * 0.145)
           && Math.abs(item.y - y) * bounds.height < 52;
@@ -369,6 +354,7 @@ function GridCanvas({ selectedId, onSelect, onNodeClick, powerConsumption }) {
     });
   };
 
+  // Opens the selected asset or updates the selected residential node.
   const selectAtPointer = (event) => {
     const node = nodeAtPointer(event);
     if (node) {
@@ -377,6 +363,7 @@ function GridCanvas({ selectedId, onSelect, onNodeClick, powerConsumption }) {
     }
   };
 
+  // Changes map zoom while keeping it within the supported limits.
   const adjustZoom = (change) => {
     setZoom((currentZoom) => {
       const nextZoom = Math.min(MAX_MAP_ZOOM, Math.max(MIN_MAP_ZOOM, currentZoom + change));
@@ -390,7 +377,7 @@ function GridCanvas({ selectedId, onSelect, onNodeClick, powerConsumption }) {
       <canvas
         ref={canvasRef}
         className="grid-map-canvas"
-        aria-label={`Grid map. Selected ${NODES.find((node) => node.id === focusedNodeRef.current)?.label}. Use arrow keys to choose a node and Enter to open it.`}
+        aria-label={`Grid map. Selected ${nodesRef.current.find((node) => node.id === focusedNodeRef.current)?.label}. Use arrow keys to choose a node and Enter to open it.`}
         onClick={selectAtPointer}
         onMouseMove={(event) => {
           event.currentTarget.style.cursor = nodeAtPointer(event) ? 'pointer' : 'crosshair';
@@ -403,9 +390,9 @@ function GridCanvas({ selectedId, onSelect, onNodeClick, powerConsumption }) {
           }
           if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'ArrowUp' || event.key === 'ArrowDown') {
             event.preventDefault();
-            const currentIndex = NODES.findIndex((node) => node.id === focusedNodeRef.current);
+            const currentIndex = nodesRef.current.findIndex((node) => node.id === focusedNodeRef.current);
             const direction = event.key === 'ArrowLeft' || event.key === 'ArrowUp' ? -1 : 1;
-            const nextNode = NODES[(currentIndex + direction + NODES.length) % NODES.length];
+            const nextNode = nodesRef.current[(currentIndex + direction + nodesRef.current.length) % nodesRef.current.length];
             focusedNodeRef.current = nextNode.id;
             selectedRef.current = nextNode.id;
             onSelectRef.current(nextNode.id);
@@ -440,28 +427,36 @@ function GridCanvas({ selectedId, onSelect, onNodeClick, powerConsumption }) {
 }
 
 // BoltMark() -> Small additional component that displays the lightning symbol.
+// Renders the GridGuard lightning mark used in the dashboard.
 function BoltMark() {
   return <span className="gridguard-mark" aria-hidden="true">ϟ</span>;
 }
 
-/* Dashboard() -> Main page containing the header, statistics, map, details panel, and logout  
-functionality. */
+// Displays live network telemetry and routes users to the substation details.
 export default function Dashboard() {
   const { user } = useOutletContext();
   const navigate = useNavigate();
   const [selectedId, setSelectedId] = useState('residential');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [liveData, setLiveData] = useState(null);
-  const [liveError, setLiveError] = useState('');
+  const { liveData, liveError, assetOverview } = useLiveTelemetry();
+  const nodes = NODES.map((node) => ({
+    ...node,
+    label: node.id === 'substation'
+      ? assetOverview?.substation?.name || node.label
+      : assetOverview?.area?.name || node.label,
+    type: node.id === 'substation'
+      ? node.type
+      : assetOverview?.area?.type || node.type,
+  }));
   const simulationDateTime = splitSimulationDateTime(liveData?.simTime);
-  const selectedNode = NODES.find((node) => node.id === selectedId) || NODES[0];
+  const selectedNode = nodes.find((node) => node.id === selectedId) || nodes[0];
   const selectedLoad = selectedId === 'substation'
     ? liveData?.substation.currentLoadKw
     : liveData?.area.currentLoadKw;
   const connectedNodes = CONNECTIONS
     .filter(([from, to]) => from === selectedId || to === selectedId)
-    .map(([from, to]) => NODES.find((node) => node.id === (from === selectedId ? to : from))?.label)
+    .map(([from, to]) => nodes.find((node) => node.id === (from === selectedId ? to : from))?.label)
     .filter(Boolean);
   const initials = user.name
     .split(/\s+/)
@@ -470,38 +465,7 @@ export default function Dashboard() {
     .slice(0, 2)
     .toUpperCase();
 
-  useEffect(() => {
-    let active = true;
-    let timeout;
-    let controller;
-
-    const pollLiveData = async () => {
-      controller = new AbortController();
-      try {
-        const nextLiveData = await fetchLiveData(controller.signal);
-        if (active) {
-          setLiveData(nextLiveData);
-          setLiveError('');
-        }
-      } catch (liveRequestError) {
-        if (active && liveRequestError.name !== 'AbortError') {
-          setLiveError(liveRequestError.message);
-        }
-      } finally {
-        if (active) {
-          timeout = window.setTimeout(pollLiveData, LIVE_POLL_INTERVAL_MS);
-        }
-      }
-    };
-
-    pollLiveData();
-    return () => {
-      active = false;
-      window.clearTimeout(timeout);
-      controller?.abort();
-    };
-  }, []);
-
+  // Signs out the user and returns them to the login screen.
   const handleLogout = async () => {
     setError('');
     setLoading(true);
@@ -515,6 +479,7 @@ export default function Dashboard() {
     }
   };
 
+  // Opens substation details or selects the residential node on the map.
   const handleNodeClick = (nodeId) => {
     if (nodeId === 'substation') {
       navigate('/substation/north-substation');
@@ -562,7 +527,6 @@ export default function Dashboard() {
             <div className="simulation-time">
               <span className="summary-label">SIMULATION TIME</span>
               <strong>{simulationDateTime?.time || 'Waiting for data'}</strong>
-              {simulationDateTime && <span className="simulation-date">{simulationDateTime.date}</span>}
             </div>
             <span className="summary-live">LIVE</span>
           </div>
@@ -592,6 +556,7 @@ export default function Dashboard() {
                 <span>RIVERSIDE DISTRICT <span className="map-separator">/</span> ZONE 04</span>
               </div>
               <GridCanvas
+                nodes={nodes}
                 selectedId={selectedId}
                 onSelect={setSelectedId}
                 onNodeClick={handleNodeClick}
@@ -614,7 +579,7 @@ export default function Dashboard() {
               <div className="detail-row"><span>Connected to</span><strong>{connectedNodes.join(', ')}</strong></div>
               <div className="node-picker">
                 <span className="summary-label">NETWORK NODES</span>
-                {NODES.map((node) => (
+                {nodes.map((node) => (
                   <button
                     className={`node-picker-item${selectedId === node.id ? ' is-selected' : ''}`}
                     key={node.id}

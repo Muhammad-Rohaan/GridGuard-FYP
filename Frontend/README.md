@@ -18,9 +18,11 @@ The React app displays a protected GridGuard dashboard for `USER` and
 connected by a transmission line to a boxed residential area. Select either
 node on the map or in the node list; selecting the substation opens its
 protected `/substation/north-substation` details page, while selecting the
-residential area updates the dashboard details. Substation telemetry and
-configuration are placeholders for a future backend integration. Network
-readings and assets shown on the map are demonstration data.
+residential area updates the dashboard details. The dashboard fetches the
+current date/hour's readings from `GET /api/live`, starts at the reading nearest
+the browser's current time, advances through the remaining readings every five
+seconds, then polls again after the list is consumed. The API expects dataset
+timestamps to use the current month/day for the date filter.
 Public signup omits the role and therefore creates a `USER` account. For testing a
 technical-worker account through the API, include `"roles": "TECHNICAL_WORKER"` in
 the registration JSON. This registration endpoint is public, so role selection is

@@ -27,6 +27,7 @@ public class SubstationController extends SubstationRoutes{
     private SubstationService substationService;
 
     @Override
+    // Creates a substation from the technical worker's submitted fields.
     @PostMapping("/register-substation")
     public ResponseEntity<String> addSubstation(@RequestBody SubstationsRequestDTO substationsRequestDTO) {
         try {
@@ -39,6 +40,7 @@ public class SubstationController extends SubstationRoutes{
     }
 
     @Override
+    // Returns the substations available to technical workers.
     @GetMapping("/fetch-subs")
     public ResponseEntity<List<Substations>> fetchAllSubstations() { // Not performed API Testing
         try {
@@ -51,6 +53,7 @@ public class SubstationController extends SubstationRoutes{
     }
 
     @Override
+    // Replaces an existing substation's editable fields.
     @PutMapping("/update-substation/{substationId}")
     public ResponseEntity<String> updateSubstation(
             @PathVariable Long substationId,
@@ -67,6 +70,7 @@ public class SubstationController extends SubstationRoutes{
     }
 
     @Override
+    // Deletes the requested substation when it exists.
     @DeleteMapping("/delete-substation/{substationId}")
     public ResponseEntity<String> deleteSubstation(@PathVariable Long substationId) {
         if (!substationService.deleteSubstation(substationId)) {
