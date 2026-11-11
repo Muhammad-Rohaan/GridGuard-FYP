@@ -39,8 +39,11 @@ public interface LoadReadingRepo extends JpaRepository<LoadReading, Long> {
     @Query("SELECT MIN(l.recordedAt) FROM LoadReading l")
     Optional<LocalDateTime> findMinRecordedAt();
 
+    // Selects all readings for the requested month/day and hour in playback order.
     @Query(value = """
-            SELECT * FROM load_readings WHERE TO_CHAR(recorded_at, 'MM-DD HH24') = :dateTime;
+            SELECT * FROM load_readings
+            WHERE TO_CHAR(recorded_at, 'MM-DD HH24') = :dateTime
+            ORDER BY recorded_at ASC;
             """, nativeQuery = true)
     List<LoadReading> findByDateTime(@Param("dateTime") String dateTime);
 

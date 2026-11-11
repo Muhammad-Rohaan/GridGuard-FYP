@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { apiLogout } from '../services/auth.js';
+import { useLiveTelemetry } from '../services/LiveTelemetryProvider.jsx';
+import LiveLoadChart from './LiveLoadChart.jsx';
+import TechnicalSubstationManager from './TechnicalSubstationManager.jsx';
 import './dashboard.css';
 
 function BoltMark() {
@@ -13,6 +16,9 @@ export default function SubstationPage() {
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { liveError, history, assetOverview } = useLiveTelemetry();
+  const substation = assetOverview?.substation;
+  const area = assetOverview?.area;
   const initials = user.name
     .split(/\s+/)
     .map((part) => part[0])
@@ -58,10 +64,12 @@ export default function SubstationPage() {
         <section className="substation-title">
           <div>
             <p className="eyebrow">GRID ASSET / SUBSTATION</p>
-            <h1>North Substation</h1>
+            <h1>{substation?.name || 'North Substation'}</h1>
             <p className="intro-copy">Substation overview and configuration.</p>
           </div>
-          <span className="node-status substation-connection"><span className="status-dot" /> BACKEND NOT CONNECTED</span>
+          <span className={`node-status substation-connection${liveError ? ' is-stale' : ''}`}>
+            <span className="status-dot" /> {liveError ? 'LIVE DATA STALE' : substation ? 'LIVE TELEMETRY' : 'CONNECTING'}
+          </span>
         </section>
 
         <section className="substation-card" aria-labelledby="substation-overview">
@@ -75,29 +83,49 @@ export default function SubstationPage() {
           <div className="substation-fields">
             <div className="substation-field">
               <span>Asset ID</span>
-              <strong>{substationId}</strong>
+              <strong>{substation?.substationId ?? substationId}</strong>
+            </div>
+            <div className="substation-field">
+              <span>Code</span>
+              <strong>{substation?.code || 'Waiting for backend data'}</strong>
             </div>
             <div className="substation-field">
               <span>Asset type</span>
               <strong>Substation</strong>
             </div>
             <div className="substation-field">
-              <span>Connected area</span>
-              <strong>Residential Area</strong>
+              <span>Profile type</span>
+              <strong>{substation?.subProfileType || 'Waiting for backend data'}</strong>
             </div>
             <div className="substation-field">
-              <span>Configuration source</span>
-              <strong>Backend integration pending</strong>
+              <span>Connected area</span>
+              <strong>{area?.name || 'Waiting for backend data'}</strong>
             </div>
-          </div>
-          <div className="backend-placeholder">
-            <span className="backend-placeholder-icon">⌁</span>
-            <div>
-              <strong>Substation data will appear here</strong>
-              <p>Connect this page to the backend to load live status, measurements, and editable configuration.</p>
+            <div className="substation-field">
+              <span>Operating status</span>
+              <strong>{substation?.status || 'Waiting for backend data'}</strong>
+            </div>
+            <div className="substation-field">
+              <span>Capacity</span>
+              <strong>{Number.isFinite(substation?.capacityKw)
+                ? `${substation.capacityKw.toFixed(2)} kW`
+                : 'Waiting for backend data'}</strong>
+            </div>
+            <div className="substation-field">
+              <span>Stored load</span>
+              <strong>{Number.isFinite(substation?.currentLoadKw)
+                ? `${substation.currentLoadKw.toFixed(2)} kW`
+                : 'Waiting for backend data'}</strong>
+            </div>
+            <div className="substation-field">
+              <span>Area type</span>
+              <strong>{area?.type || 'Waiting for backend data'}</strong>
             </div>
           </div>
         </section>
+        {user.role === 'TECHNICAL_WORKER' && <TechnicalSubstationManager />}
+        <LiveLoadChart history={history} />
+        {liveError && <p className="dashboard-error" role="alert">{liveError}</p>}
         {error && <p className="dashboard-error" role="alert">{error}</p>}
       </div>
     </main>

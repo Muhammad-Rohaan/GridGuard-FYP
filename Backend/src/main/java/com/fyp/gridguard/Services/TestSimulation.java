@@ -15,6 +15,7 @@ public class TestSimulation {
     @Autowired 
     private LoadReadingRepo loadReadingRepo;
 
+    // Delegates current-hour reading lookup to the load-reading repository.
     public List<LoadReading> findByDateTime(String userCurrentDateTime) {
         return loadReadingRepo.findByDateTime(userCurrentDateTime);
     }

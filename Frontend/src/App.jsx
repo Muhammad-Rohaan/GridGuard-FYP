@@ -5,7 +5,9 @@ import SignUp from './pages/SignUp.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import SubstationPage from './pages/SubstationPage.jsx';
 import { apiCurrentUser } from './services/auth.js';
+import { LiveTelemetryProvider } from './services/LiveTelemetryProvider.jsx';
 
+// Restores the signed-in user and protects all authenticated application routes.
 function Protected() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,9 +29,14 @@ function Protected() {
   }, []);
 
   if (loading) return <div className="dash-placeholder">Checking your session…</div>;
-  return user ? <Outlet context={{ user }} /> : <Navigate to="/login" replace />;
+  return user ? (
+    <LiveTelemetryProvider>
+      <Outlet context={{ user }} />
+    </LiveTelemetryProvider>
+  ) : <Navigate to="/login" replace />;
 }
 
+// Declares public auth routes and the protected dashboard/substation routes.
 export default function App() {
   return (
     <BrowserRouter>

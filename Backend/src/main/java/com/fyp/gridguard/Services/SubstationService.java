@@ -15,6 +15,7 @@ public class SubstationService {
     @Autowired
     private SubstationRepo substationRepo;
 
+    // Maps the request fields to a new entity and persists it.
     public String addSubstation(SubstationsRequestDTO substationsRequestDTO) {
         try {
             if (substationsRequestDTO != null) {
@@ -38,6 +39,7 @@ public class SubstationService {
         }
     }
 
+    // Loads all persisted substations for the management list.
     public List<Substations> fetchAllSubstations() {
         try {
             return substationRepo.findAll();
@@ -46,6 +48,7 @@ public class SubstationService {
         }
     }
 
+    // Updates an existing substation and reports whether its ID was found.
     public boolean updateSubstation(Long substationId, SubstationsRequestDTO substationsRequestDTO) {
         return substationRepo.findById(substationId)
                 .map(substation -> {
@@ -61,6 +64,7 @@ public class SubstationService {
                 .orElse(false);
     }
 
+    // Deletes an existing substation and reports whether its ID was found.
     public boolean deleteSubstation(Long substationId) {
         return substationRepo.findById(substationId)
                 .map(substation -> {
