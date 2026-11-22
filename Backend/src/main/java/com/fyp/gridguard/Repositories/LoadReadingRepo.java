@@ -1,6 +1,6 @@
 package com.fyp.gridguard.Repositories;
 
-import com.fyp.gridguard.Models.LoadReading;
+import com.fyp.gridguard.Models.ResidentialLoadReading;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.List;
 
 @Repository
-public interface LoadReadingRepo extends JpaRepository<LoadReading, Long> {
+public interface LoadReadingRepo extends JpaRepository<ResidentialLoadReading, Long> {
     // Optional<LoadReading> findByAreaIdAndRecordedAt(Long id, LocalDateTime
     // currentSimTime);
     //
@@ -33,7 +33,7 @@ public interface LoadReadingRepo extends JpaRepository<LoadReading, Long> {
     // @Query("SELECT MIN(lr.recordedAt) FROM LoadReading lr")
     // Optional<LocalDateTime> findMinRecordedAt();
 
-    Optional<LoadReading> findByAreaIdAndRecordedAt(Long areaId, LocalDateTime recordedAt);
+    Optional<ResidentialLoadReading> findByAreaIdAndRecordedAt(Long areaId, LocalDateTime recordedAt);
 
 //    /// send current timestamp as a param
 //    @Query("SELECT MIN(l.recordedAt) FROM LoadReading l")
@@ -45,6 +45,6 @@ public interface LoadReadingRepo extends JpaRepository<LoadReading, Long> {
             WHERE TO_CHAR(recorded_at, 'MM-DD HH24') = :dateTime
             ORDER BY recorded_at ASC;
             """, nativeQuery = true)
-    List<LoadReading> findByDateTime(@Param("dateTime") String dateTime);
+    List<ResidentialLoadReading> findByDateTime(@Param("dateTime") String dateTime);
 
 }

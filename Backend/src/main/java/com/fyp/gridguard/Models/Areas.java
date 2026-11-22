@@ -17,15 +17,15 @@ public class Areas {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;              // "Residential Area 1"
-    private String code;              // "AREA-R1"
-    private String type;              // "RESIDENTIAL"
+    private String name;
+    private String code;
+    private String type;
 
     @ManyToOne
     @JoinColumn(name = "substation_id")
-    private Substations substation;    // always points to the single substation
+    private Substations substation;
 
-    private Double currentLoadKw;     // updated by tick engine
+    private Double currentLoadKw;
     private LocalDateTime updatedAt;
 
 }

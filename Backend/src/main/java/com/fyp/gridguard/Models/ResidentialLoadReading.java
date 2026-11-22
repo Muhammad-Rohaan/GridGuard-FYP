@@ -19,13 +19,13 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table (name = "load_readings")
+@Table (name = "residential_load_readings")
 @Getter 
 @Setter 
 @AllArgsConstructor 
 @NoArgsConstructor 
 @ToString 
-public class LoadReading {  // Residential Power consumption, 5s of interval
+public class ResidentialLoadReading {  // Residential Power consumption, 5s of interval
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +33,7 @@ public class LoadReading {  // Residential Power consumption, 5s of interval
 
     @ManyToOne
     @JoinColumn(name = "area_id")
-    private Areas area;     // always the single residential area
+    private Areas area;
 
     private LocalDateTime recordedAt; // 2017-01-01 00:00:00
     private Double loadKw;            // 360.5

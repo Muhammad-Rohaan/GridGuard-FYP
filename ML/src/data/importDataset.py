@@ -51,7 +51,7 @@ def main():
 
     # 3. Optional: Clear old data for this area
     print("Deleting old readings for this area...")
-    cur.execute("DELETE FROM load_readings WHERE area_id = %s", (area_id,))
+    cur.execute("DELETE FROM residential_load_readings WHERE area_id = %s", (area_id,))
     conn.commit()
 
     # 4. Prepare data for bulk insert
@@ -61,9 +61,9 @@ def main():
     ]
 
     # 5. Bulk insert (very fast)
-    print("Inserting data into load_readings...")
+    print("Inserting data into residential_load_readings...")
     insert_query = """
-        INSERT INTO load_readings (area_id, recorded_at, load_kw)
+        INSERT INTO residential_load_readings (area_id, recorded_at, load_kw)
         VALUES %s
         ON CONFLICT (area_id, recorded_at) DO NOTHING
     """
@@ -72,7 +72,7 @@ def main():
     conn.commit()
 
     # 6. Verify
-    cur.execute("SELECT COUNT(*) FROM load_readings WHERE area_id = %s", (area_id,))
+    cur.execute("SELECT COUNT(*) FROM residential_load_readings WHERE area_id = %s", (area_id,))
     count = cur.fetchone()[0]
     print(f"Successfully imported {count} rows!")
 

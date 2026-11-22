@@ -1,7 +1,7 @@
 package com.fyp.gridguard.Controllers;
 
 import com.fyp.gridguard.Models.Areas;
-import com.fyp.gridguard.Models.LoadReading;
+import com.fyp.gridguard.Models.ResidentialLoadReading;
 import com.fyp.gridguard.Services.TestSimulation;
 
 import lombok.RequiredArgsConstructor;
@@ -23,10 +23,10 @@ public class LiveController {
 
     // Returns the ordered readings for the current local date and hour.
     @GetMapping("/live")
-    public ResponseEntity<List<LoadReading>> findByDateTime() {
+    public ResponseEntity<List<ResidentialLoadReading>> findByDateTime() {
         LocalDateTime currentTime = LocalDateTime.now();
         String currentDateAndHour = currentTime.format(DateTimeFormatter.ofPattern("MM-dd HH"));
-        List<LoadReading> response = testSimulation.findByDateTime(currentDateAndHour);
+        List<ResidentialLoadReading> response = testSimulation.findByDateTime(currentDateAndHour);
         return ResponseEntity.ok(response);
     }
 
