@@ -19,20 +19,19 @@ import com.fyp.gridguard.Services.SubstationService;
 import java.util.List;
 
 
-@RestController 
-@RequestMapping("api/technical-worker/substations")
+@RestController
+@RequestMapping("api/admin/substations")
 public class SubstationController extends SubstationRoutes{
 
     @Autowired
     private SubstationService substationService;
 
     @Override
-    // Creates a substation from the technical worker's submitted fields.
     @PostMapping("/register-substation")
     public ResponseEntity<String> addSubstation(@RequestBody SubstationsRequestDTO substationsRequestDTO) {
         try {
             String response = substationService.addSubstation(substationsRequestDTO);
-            
+
             return ResponseEntity.status(200).body(response);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("ERROR in Registering Substation " + e);
@@ -40,7 +39,6 @@ public class SubstationController extends SubstationRoutes{
     }
 
     @Override
-    // Returns the substations available to technical workers.
     @GetMapping("/fetch-subs")
     public ResponseEntity<List<Substations>> fetchAllSubstations() { // Not performed API Testing
         try {
@@ -53,7 +51,6 @@ public class SubstationController extends SubstationRoutes{
     }
 
     @Override
-    // Replaces an existing substation's editable fields.
     @PutMapping("/update-substation/{substationId}")
     public ResponseEntity<String> updateSubstation(
             @PathVariable Long substationId,
@@ -70,7 +67,6 @@ public class SubstationController extends SubstationRoutes{
     }
 
     @Override
-    // Deletes the requested substation when it exists.
     @DeleteMapping("/delete-substation/{substationId}")
     public ResponseEntity<String> deleteSubstation(@PathVariable Long substationId) {
         if (!substationService.deleteSubstation(substationId)) {
