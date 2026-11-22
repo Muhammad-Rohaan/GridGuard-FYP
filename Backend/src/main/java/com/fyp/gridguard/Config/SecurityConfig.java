@@ -51,6 +51,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/login", "/api/auth/register-user", "/api/auth/logout", "/").permitAll()
                         .requestMatchers("/api/user/**").hasRole("USER")
                         .requestMatchers("/api/technical-worker/**").hasRole("TECHNICAL_WORKER")  // OCT-29 | has some issues
+                        .requestMatchers("/api/admin/**").hasRole("SYS_ADMIN")
                         .anyRequest().authenticated()
                 )
 
