@@ -19,3 +19,19 @@ VALUES (
 
 CREATE UNIQUE INDEX ux_load_readings_area_time
 ON residential_load_readings(area_id, recorded_at);
+
+
+--------
+-- Do this when add new role in Role (Enum)
+SELECT pg_get_constraintdef(oid)
+FROM pg_constraint
+WHERE conrelid = 'users'::regclass
+  AND conname = 'users_roles_check';
+
+ALTER TABLE users DROP CONSTRAINT users_roles_check;
+
+ALTER TABLE users
+ADD CONSTRAINT users_roles_check
+CHECK (roles IN ('USER', 'TECHNICAL_WORKER', 'SYS_ADMIN'));
+
+---------------

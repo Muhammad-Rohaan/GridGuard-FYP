@@ -22,6 +22,8 @@ import lombok.ToString;
 @ToString 
 public class Substations {
 
+    /// Will be updated after Feature Engineering
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long substationId;
