@@ -4,7 +4,6 @@ import { apiLogout } from '../services/auth.js';
 import { useLiveTelemetry } from '../services/LiveTelemetryProvider.jsx';
 import LiveLoadChart from './LiveLoadChart.jsx';
 import TechnicalSubstationManager from './TechnicalSubstationManager.jsx';
-import { Bolt } from '../components/icons.jsx';
 import './dashboard.css';
 
 export default function SubstationPage() {
@@ -40,7 +39,6 @@ export default function SubstationPage() {
     <main className="dashboard-page">
       <header className="dashboard-header">
         <Link className="dashboard-brand" to="/" aria-label="GridGuard dashboard">
-        <Bolt/>
           <span>GRID<span className="brand-accent">GUARD</span></span>
         </Link>
         <div className="header-user">

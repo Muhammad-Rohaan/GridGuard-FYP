@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import { apiLogout } from '../services/auth.js';
 import { useLiveTelemetry } from '../services/LiveTelemetryProvider.jsx';
-import { Bolt } from '../components/icons.jsx';
 import './dashboard.css';
 
 // Data describing the electicity network.
@@ -504,7 +503,6 @@ export default function Dashboard() {
     <main className="dashboard-page">
       <header className="dashboard-header">
         <Link className="dashboard-brand" to="/" aria-label="GridGuard home">
-        <Bolt/>
           <span>GRID<span className="brand-accent">GUARD</span></span>
         </Link>
         <div className="header-user">
