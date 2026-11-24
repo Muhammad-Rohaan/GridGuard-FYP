@@ -4,11 +4,8 @@ import { apiLogout } from '../services/auth.js';
 import { useLiveTelemetry } from '../services/LiveTelemetryProvider.jsx';
 import LiveLoadChart from './LiveLoadChart.jsx';
 import TechnicalSubstationManager from './TechnicalSubstationManager.jsx';
+import { Bolt } from '../components/icons.jsx';
 import './dashboard.css';
-
-function BoltMark() {
-  return <span className="gridguard-mark" aria-hidden="true">ϟ</span>;
-}
 
 export default function SubstationPage() {
   const { user } = useOutletContext();
@@ -43,12 +40,10 @@ export default function SubstationPage() {
     <main className="dashboard-page">
       <header className="dashboard-header">
         <Link className="dashboard-brand" to="/" aria-label="GridGuard dashboard">
-          <BoltMark />
+        <Bolt/>
           <span>GRID<span className="brand-accent">GUARD</span></span>
         </Link>
-        <div className="header-status"><span className="status-dot" /> GRID SYSTEM NORMAL</div>
         <div className="header-user">
-          <div className="user-avatar">{initials || 'U'}</div>
           <div className="user-meta">
             <strong>{user.name}</strong>
             <span>{user.role === 'TECHNICAL_WORKER' ? 'Technical worker' : 'Grid user'}</span>
@@ -65,16 +60,11 @@ export default function SubstationPage() {
           <div>
             <p className="eyebrow">GRID ASSET / SUBSTATION</p>
             <h1>{substation?.name || 'North Substation'}</h1>
-            <p className="intro-copy">Substation overview and configuration.</p>
           </div>
-          <span className={`node-status substation-connection${liveError ? ' is-stale' : ''}`}>
-            <span className="status-dot" /> {liveError ? 'LIVE DATA STALE' : substation ? 'LIVE TELEMETRY' : 'CONNECTING'}
-          </span>
         </section>
 
         <section className="substation-card" aria-labelledby="substation-overview">
           <div className="substation-card-heading">
-            <div className="substation-symbol"><BoltMark /></div>
             <div>
               <p className="eyebrow">ASSET OVERVIEW</p>
               <h2 id="substation-overview">Substation details</h2>

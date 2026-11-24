@@ -1,0 +1,304 @@
+:root {
+  --bg-primary: #17191D;
+  --bg-secondary: #202329;
+  --bg-card: #292D33;
+  --bg-card-hover: #343A42;
+
+  --accent-primary: #FF8A24;
+  --accent-secondary: #FFC15A;
+
+  --text-primary: #E8E8E8;
+  --text-secondary: #A1A7B0;
+  --text-muted: #737B86;
+
+  --border-color: #3A4048;
+
+  --status-success: #22C55E;
+  --status-warning: #FACC15;
+  --status-danger: #EF4444;
+  --status-info: #38BDF8;
+
+  --bg: var(--bg-primary);
+  --line: var(--border-color);
+  --cyan: var(--accent-primary);
+  --cyan-soft: var(--accent-secondary);
+  --amber: var(--status-warning);
+  --green: var(--status-success);
+  --red: var(--status-danger);
+  --text: var(--text-primary);
+  --muted: var(--text-muted);
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.brand-panel h1 span,
+.feature-list svg,
+.switch-line a,
+.eye:hover {
+  color: var(--accent-primary);
+}
+
+.logo-hex {
+  color: var(--bg-primary);
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  box-shadow: 0 0 26px color-mix(in srgb, var(--accent-primary) 55%, transparent);
+}
+
+.auth-card {
+  border-color: var(--border-color);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--bg-secondary) 94%, transparent), color-mix(in srgb, var(--bg-primary) 96%, transparent));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent-primary) 8%, transparent), 0 0 46px color-mix(in srgb, var(--accent-primary) 12%, transparent), inset 0 0 70px color-mix(in srgb, var(--accent-primary) 4%, transparent);
+}
+
+.input-wrap input {
+  border-color: var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.input-wrap input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-primary) 14%, transparent), 0 0 20px color-mix(in srgb, var(--accent-primary) 28%, transparent);
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, var(--accent-secondary), var(--accent-primary));
+  color: var(--bg-primary);
+  box-shadow: 0 0 22px color-mix(in srgb, var(--accent-primary) 35%, transparent);
+}
+
+.btn-primary:hover:not(:disabled) {
+  box-shadow: 0 0 32px color-mix(in srgb, var(--accent-primary) 55%, transparent);
+}
+
+.dashboard-page {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.dashboard-header {
+  border-bottom-color: color-mix(in srgb, var(--border-color) 75%, transparent);
+  background: var(--bg-primary);
+}
+
+.dashboard-brand,
+.user-meta strong,
+.dashboard-intro h1,
+.network-heading h2,
+.panel-heading h3,
+.selected-node strong,
+.detail-row strong,
+.substation-title h1,
+.substation-card-heading h2,
+.substation-form h3,
+.managed-substation-list h3,
+.substation-field strong,
+.managed-substation-details strong,
+.live-chart-heading h2,
+.chart-reading strong,
+.chart-tooltip-load {
+  color: var(--text-primary);
+}
+
+.brand-accent,
+.back-to-map:hover,
+.map-zoom-controls button:hover:not(:disabled),
+.chart-range-controls button:hover,
+.chart-range-controls button.is-selected {
+  color: var(--accent-primary);
+}
+
+.gridguard-mark,
+.user-avatar,
+.network-pill,
+.summary-live,
+.key-line,
+.key-node,
+.node-status,
+.detail-row .detail-online,
+.substation-connection {
+  color: var(--status-success);
+}
+
+.gridguard-mark {
+  background: color-mix(in srgb, var(--accent-primary) 13%, transparent);
+}
+
+.user-avatar {
+  border-color: color-mix(in srgb, var(--accent-primary) 28%, transparent);
+  background: var(--bg-secondary);
+}
+
+.logout-button,
+.map-zoom-controls,
+.map-zoom-controls button,
+.chart-range-controls,
+.manager-secondary-button {
+  border-color: color-mix(in srgb, var(--border-color) 80%, transparent);
+}
+
+.logout-button,
+.manager-primary-button,
+.manager-secondary-button,
+.manager-danger-button {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+.logout-button:hover:not(:disabled),
+.manager-primary-button:hover:not(:disabled),
+.manager-secondary-button:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--accent-primary) 58%, transparent);
+  color: var(--accent-primary);
+}
+
+.eyebrow,
+.back-to-map,
+.substation-connection,
+.node-status,
+.manager-success {
+  color: var(--accent-secondary);
+}
+
+.intro-copy,
+.network-pill,
+.summary-label,
+.simulation-date,
+.summary-card strong small,
+.map-key,
+.detail-row,
+.substation-field span,
+.substation-form-grid label,
+.managed-substation-details span,
+.chart-reading span,
+.chart-empty-state {
+  color: var(--text-secondary);
+}
+
+.summary-card {
+  border-color: var(--border-color);
+  background: var(--bg-card-hover);
+}
+
+.map-frame,
+.node-panel,
+.substation-card,
+.live-chart-card {
+  border-color: var(--border-color);
+  background: var(--bg-card);
+}
+
+.map-topline,
+.map-zoom-controls,
+.chart-range-controls,
+.managed-substation,
+.substation-form-grid input,
+.manager-primary-button,
+.manager-secondary-button,
+.manager-danger-button {
+  background: var(--bg-secondary);
+}
+
+.map-zoom-controls button {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.node-picker-item {
+  color: var(--text-secondary);
+}
+
+.node-picker-item:hover,
+.node-picker-item.is-selected,
+.selected-node-icon,
+.substation-symbol {
+  border-color: color-mix(in srgb, var(--accent-primary) 30%, var(--border-color));
+  background: color-mix(in srgb, var(--accent-primary) 8%, var(--bg-card));
+}
+
+.selected-node-icon .gridguard-mark,
+.substation-symbol .gridguard-mark {
+  color: var(--accent-primary);
+}
+
+.substation-form-grid input {
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.substation-form-grid input:focus {
+  border-color: var(--accent-primary);
+}
+
+.manager-primary-button {
+  border-color: color-mix(in srgb, var(--accent-primary) 36%, var(--border-color));
+  background: color-mix(in srgb, var(--accent-primary) 12%, var(--bg-secondary));
+  color: var(--accent-secondary);
+}
+
+.manager-danger-button {
+  border-color: color-mix(in srgb, var(--status-danger) 32%, var(--border-color));
+  color: var(--status-danger);
+}
+
+.substation-connection.is-stale {
+  border-color: color-mix(in srgb, var(--status-warning) 32%, transparent);
+  color: var(--status-warning);
+}
+
+.substation-connection.is-stale .status-dot {
+  background: var(--status-warning);
+  box-shadow: 0 0 9px color-mix(in srgb, var(--status-warning) 45%, transparent);
+}
+
+.dashboard-error {
+  color: var(--status-danger);
+}
+
+.chart-range-controls button {
+  color: var(--text-secondary);
+}
+
+.chart-range-controls button:hover,
+.chart-range-controls button.is-selected {
+  background: color-mix(in srgb, var(--accent-primary) 12%, transparent);
+}
+
+.chart-range-controls button:focus-visible,
+.live-chart-plot svg:focus-visible,
+.grid-map-canvas:focus-visible {
+  outline-color: var(--accent-primary);
+}
+
+.chart-grid-line {
+  stroke: color-mix(in srgb, var(--border-color) 70%, transparent);
+}
+
+.chart-area {
+  fill: color-mix(in srgb, var(--accent-primary) 8%, transparent);
+}
+
+.chart-line {
+  stroke: var(--accent-primary);
+}
+
+.chart-point,
+.chart-selected-point {
+  fill: var(--accent-secondary);
+}
+
+.chart-crosshair {
+  stroke: color-mix(in srgb, var(--accent-primary) 45%, transparent);
+}
+
+.chart-tooltip rect {
+  fill: var(--bg-card);
+  stroke: color-mix(in srgb, var(--accent-primary) 45%, transparent);
+}
+
+.chart-tooltip-time {
+  fill: var(--accent-secondary);
+}

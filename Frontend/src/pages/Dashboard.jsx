@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import { apiLogout } from '../services/auth.js';
 import { useLiveTelemetry } from '../services/LiveTelemetryProvider.jsx';
+import { Bolt } from '../components/icons.jsx';
 import './dashboard.css';
 
 // Data describing the electicity network.
 const NODES = [
-  { id: 'substation', label: 'North Substation', type: 'Substation', x: 0.22, y: 0.52, voltage: '132 kV', status: 'Online', color: '#27d8ed' },
-  { id: 'residential', label: 'Residential Area', type: 'Residential area', x: 0.77, y: 0.52, voltage: '11 kV', status: 'Online', color: '#54d69a' },
+  { id: 'substation', label: 'North Substation', type: 'Substation', x: 0.77, y: 0.52, voltage: '132 kV', status: 'Online', color: '#27d8ed' },
+  { id: 'residential', label: 'Residential Area', type: 'Residential area', x: 0.22, y: 0.52, voltage: '11 kV', status: 'Online', color: '#54d69a' },
 ];
 
 // Connection between substation -> area
@@ -75,8 +76,25 @@ function drawMap(canvas, nodes, selectedId, time, powerConsumption, zoom) {
   const connectionPoints = ([from, to]) => {
     const start = point(nodeById[from]);
     const end = point(nodeById[to]);
-    start.x -= Math.min(83, width * 0.145);
-    end.x += 15;
+
+    if (from === 'residential') {
+      const boxWidth = Math.min(166, width * 0.29);
+      const startDirection = end.x >= start.x ? 1 : -1;
+      start.x += startDirection * boxWidth / 2;
+    }
+
+    if (to === 'residential') {
+      const boxWidth = Math.min(166, width * 0.29);
+      const endDirection = start.x >= end.x ? 1 : -1;
+      end.x += endDirection * boxWidth / 2;
+    } else if (to === 'substation') {
+      end.x += end.x >= start.x ? -15 : 15;
+    }
+
+    if (from === 'substation') {
+      start.x += start.x >= end.x ? 15 : -15;
+    }
+
     return { start, end };
   };
 
@@ -426,12 +444,6 @@ function GridCanvas({ nodes, selectedId, onSelect, onNodeClick, powerConsumption
   );
 }
 
-// BoltMark() -> Small additional component that displays the lightning symbol.
-// Renders the GridGuard lightning mark used in the dashboard.
-function BoltMark() {
-  return <span className="gridguard-mark" aria-hidden="true">ϟ</span>;
-}
-
 // Displays live network telemetry and routes users to the substation details.
 export default function Dashboard() {
   const { user } = useOutletContext();
@@ -492,12 +504,10 @@ export default function Dashboard() {
     <main className="dashboard-page">
       <header className="dashboard-header">
         <Link className="dashboard-brand" to="/" aria-label="GridGuard home">
-          <BoltMark />
+        <Bolt/>
           <span>GRID<span className="brand-accent">GUARD</span></span>
         </Link>
-        <div className="header-status"><span className="status-dot" /> GRID SYSTEM NORMAL</div>
         <div className="header-user">
-          <div className="user-avatar">{initials || 'U'}</div>
           <div className="user-meta">
             <strong>{user.name}</strong>
             <span>{user.role === 'TECHNICAL_WORKER' ? 'Technical worker' : 'Grid user'}</span>
@@ -511,50 +521,25 @@ export default function Dashboard() {
       <div className="dashboard-content">
         <section className="dashboard-intro">
           <div>
-            <p className="eyebrow">YOUR GRID AT A GLANCE</p>
             <h1>Good to see you, {user.name.split(/\s+/)[0]}.</h1>
-            <p className="intro-copy">A live view of the network powering your community.</p>
-          </div>
-          <div className="network-pill" aria-live="polite">
-            <span className="status-dot" />
-            {liveError ? 'LIVE DATA STALE' : liveData ? 'NETWORK LIVE' : 'CONNECTING'}
           </div>
         </section>
 
         <section className="network-summary" aria-label="Network summary">
           <div className="summary-card">
-            <span className="summary-icon summary-icon-green">↗</span>
             <div className="simulation-time">
               <span className="summary-label">SIMULATION TIME</span>
               <strong>{simulationDateTime?.time || 'Waiting for data'}</strong>
             </div>
-            <span className="summary-live">LIVE</span>
           </div>
           <div className="summary-card">
-            <span className="summary-icon">⌘</span>
-            <div><span className="summary-label">CONNECTED NODES</span><strong>02 <small>active</small></strong></div>
-          </div>
-          <div className="summary-card">
-            <span className="summary-icon summary-icon-amber">ϟ</span>
             <div><span className="summary-label">AREA LOAD</span><strong>{formatLoad(liveData?.area.currentLoadKw)}</strong></div>
           </div>
         </section>
 
         <section className="network-section">
-          <div className="network-heading">
-            <div>
-              <p className="eyebrow">DISTRIBUTION NETWORK</p>
-              <h2>Community map</h2>
-            </div>
-            <div className="map-key"><span className="key-line" /> Power flow <span className="key-node" /> Grid node</div>
-          </div>
-
           <div className="network-layout">
             <div className="map-frame">
-              <div className="map-topline">
-                <span><span className="status-dot" /> GRID OVERVIEW</span>
-                <span>RIVERSIDE DISTRICT <span className="map-separator">/</span> ZONE 04</span>
-              </div>
               <GridCanvas
                 nodes={nodes}
                 selectedId={selectedId}
@@ -562,19 +547,15 @@ export default function Dashboard() {
                 onNodeClick={handleNodeClick}
                 powerConsumption={liveData?.area.currentLoadKw}
               />
-              <div className="map-coordinates">33°41' N&nbsp;&nbsp; 73°03' E</div>
             </div>
 
             <aside className="node-panel">
               <div className="panel-heading">
                 <div><p className="eyebrow">SELECTED ASSET</p><h3>Node details</h3></div>
-                <span className="node-status"><span className="status-dot" /> ONLINE</span>
               </div>
               <div className="selected-node">
-                <span className="selected-node-icon"><BoltMark /></span>
                 <div><strong>{selectedNode.label}</strong><span>{selectedNode.type}</span></div>
               </div>
-              <div className="detail-row"><span>Operating status</span><strong className="detail-online">{selectedNode.status}</strong></div>
               <div className="detail-row"><span>Power Consumption</span><strong>{formatLoad(selectedLoad)}</strong></div>
               <div className="detail-row"><span>Connected to</span><strong>{connectedNodes.join(', ')}</strong></div>
               <div className="node-picker">
@@ -587,7 +568,6 @@ export default function Dashboard() {
                     aria-pressed={node.id === 'residential' ? selectedId === node.id : undefined}
                     aria-label={node.id === 'substation' ? `Open ${node.label} details` : `Select ${node.label}`}
                   >
-                    <span className="picker-dot" style={{ '--node-color': node.color }} />
                     <span>{node.label}</span>
                     <span className="picker-chevron">›</span>
                   </button>
