@@ -1,11 +1,9 @@
-import ElectricBackground from './ElectricBackground.jsx';
 import { Bolt } from './icons.jsx';
 
 
 export default function AuthShell({ title, subtitle, children }) {
   return (
     <div className="auth-root">
-      <ElectricBackground />
       <div className="auth-wrap">
         <aside className="brand-panel">
           <div className="logo-hex"><Bolt width="26" height="26" /></div>
