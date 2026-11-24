@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import { apiLogout } from '../services/auth.js';
 import { useLiveTelemetry } from '../services/LiveTelemetryProvider.jsx';
+import AdminTechnicalWorkerManager from './AdminTechnicalWorkerManager.jsx';
 import AdminSubstationManager from './AdminSubstationManager.jsx';
 import './dashboard.css';
 
@@ -579,7 +580,12 @@ export default function Dashboard() {
           {error && <p className="dashboard-error" role="alert">{error}</p>}
           {liveError && <p className="dashboard-error" role="alert">{liveError}</p>}
         </section>
-        {user.role === 'SYS_ADMIN' && <AdminSubstationManager />}
+        {user.role === 'SYS_ADMIN' && (
+          <>
+            <AdminTechnicalWorkerManager />
+            <AdminSubstationManager />
+          </>
+        )}
         <footer className="dashboard-footer"><span>GRIDGUARD COMMUNITY GRID</span><span>Network data is for demonstration purposes.</span></footer>
       </div>
     </main>

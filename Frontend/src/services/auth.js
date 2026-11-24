@@ -31,6 +31,7 @@ export async function apiSignup(payload) {
     fullName: payload.name,
     email: payload.email,
     password: payload.password,
+    ...(payload.roles ? { roles: payload.roles } : {}),
   });
 }
 

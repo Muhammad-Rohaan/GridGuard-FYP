@@ -77,6 +77,28 @@ public class AuthController extends AuthRoutes {
 
     }
 
+    @PostMapping("/change-password")
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+        if (request == null
+                || request.currentPassword() == null || request.currentPassword().isBlank()
+                || request.newPassword() == null || request.newPassword().length() < 8) {
+            return ResponseEntity.badRequest().body("Enter your current password and a new password with at least 8 characters.");
+        }
+
+        if (request.currentPassword().equals(request.newPassword())) {
+            return ResponseEntity.badRequest().body("Your new password must be different from your current password.");
+        }
+
+        if (!userService.changePassword(
+                userDetails.getUsername(),
+                request.currentPassword(),
+                request.newPassword())) {
+            return ResponseEntity.badRequest().body("Current password is incorrect.");
+        }
+
+        return ResponseEntity.ok("Password changed successfully.");
+    }
+
     @GetMapping("/me")
     public ResponseEntity<Map<String, Object>> currentUser(@AuthenticationPrincipal UserDetails userDetails) {
         Users user = userService.findByEmail(userDetails.getUsername());
@@ -94,5 +116,6 @@ public class AuthController extends AuthRoutes {
         return ResponseEntity.noContent().build();
     }
 
+    public record ChangePasswordRequest(String currentPassword, String newPassword) {}
 
 }

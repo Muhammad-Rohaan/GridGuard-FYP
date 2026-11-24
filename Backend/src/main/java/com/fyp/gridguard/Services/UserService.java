@@ -26,5 +26,15 @@ public class UserService {
         return userRepo.findByEmail(email);
     }
 
+    public boolean changePassword(String email, String currentPassword, String newPassword) {
+        Users user = userRepo.findByEmail(email);
+        if (user == null || !bCryptPasswordEncoder.matches(currentPassword, user.getPassword())) {
+            return false;
+        }
+
+        user.setPassword(bCryptPasswordEncoder.encode(newPassword));
+        userRepo.save(user);
+        return true;
+    }
 
 }

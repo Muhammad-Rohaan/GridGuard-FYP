@@ -105,6 +105,9 @@
 .substation-field { display: grid; gap: 7px; padding: 17px 0; border-bottom: 1px solid rgba(146, 177, 174, .08); }
 .substation-field span { color: #849b95; font-size: 14px; }
 .substation-field strong { color: #dce8e3; font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
+.admin-substation-manager { margin-top: 16px; }
+.admin-substation-manager .substation-card-heading { justify-content: space-between; }
+.admin-substation-manager .substation-card-heading h2 { font-size: 20px; }
 .technical-substation-manager { margin-top: 16px; }
 .technical-substation-manager .substation-card-heading { justify-content: space-between; }
 .technical-substation-manager .substation-card-heading h2 { font-size: 20px; }
