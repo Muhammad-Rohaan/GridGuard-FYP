@@ -28,7 +28,7 @@ export default function Login() {
 
   return (
     <AuthShell title="Sign-In" subtitle="Authenticate to access the grid control dashboard">
-      {registered && <div className="alert alert-success">⚡ Account energized. Please sign in.</div>}
+      {registered && <div className="alert alert-success">Please sign in.</div>}
       {error && <div className="alert alert-error">⚠ {error}</div>}
       <form onSubmit={submit} noValidate>
         <div className="field">
@@ -45,10 +45,10 @@ export default function Login() {
           </div>
         </div>
         <button className="btn-primary" disabled={loading}>
-          {loading ? <span className="spin" /> : null}{loading ? 'Connecting to grid…' : '⚡ Energize Session'}
+          {loading ? <span className="spin" /> : null}{loading ? 'Connecting to grid…' : 'Login'}
         </button>
       </form>
-      <p className="switch-line">New User? <Link to="/signup">Request grid access</Link></p>
+      <p className="switch-line">New User? <Link to="/signup">Create New Account</Link></p>
     </AuthShell>
   );
 }

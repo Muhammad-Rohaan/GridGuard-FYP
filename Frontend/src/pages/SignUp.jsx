@@ -5,7 +5,7 @@ import { apiSignup } from '../services/auth.js';
 import { User, Mail, Lock, Eye, EyeOff } from '../components/icons.jsx';
 
 const strengthOf = (p) => [p.length >= 8, /[A-Z]/.test(p), /[0-9]/.test(p), /[^A-Za-z0-9]/.test(p)].filter(Boolean).length;
-const STRENGTH = ['DE-ENERGIZED', 'LOW VOLTAGE', 'STABLE', 'HIGH VOLTAGE', 'SURGE LEVEL'];
+const STRENGTH = ['NOTHING', 'WEAK', 'NEUTRAL', 'HIGH', 'EXCELLENT'];
 
 export default function SignUp() {
   const nav = useNavigate();
@@ -61,7 +61,7 @@ export default function SignUp() {
           <span className="strength-label">{STRENGTH[level]}</span>
         </div>
         <button className="btn-primary" disabled={loading}>
-          {loading ? <span className="spin" /> : null}{loading ? 'Energizing account…' : '⚡ Create User Account'}
+          {loading ? <span className="spin" /> : null}{loading ? 'Create User Account' : 'Create User Account'}
         </button>
       </form>
       <p className="switch-line">Already registered? <Link to="/login">Sign in</Link></p>
