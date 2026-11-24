@@ -149,10 +149,7 @@ function drawMap(canvas, nodes, selectedId, time, powerConsumption, zoom) {
       context.beginPath();
       context.arc(px, py, 3, 0, Math.PI * 2);
       context.fillStyle = '#a4f5c5';
-      context.shadowColor = '#54d69a';
-      context.shadowBlur = 12;
       context.fill();
-      context.shadowBlur = 0;
 
       if (dotIndex === 1 && Number.isFinite(powerConsumption)) {
         const label = `${powerConsumption.toFixed(2)} kW`;
@@ -176,10 +173,7 @@ function drawMap(canvas, nodes, selectedId, time, powerConsumption, zoom) {
       context.beginPath();
       context.arc(px, py, 3, 0, Math.PI * 2);
       context.fillStyle = '#a4f5c5';
-      context.shadowColor = '#54d69a';
-      context.shadowBlur = 12;
       context.fill();
-      context.shadowBlur = 0;
 
       if (dotIndex === 2 && Number.isFinite(powerConsumption)) {
         const label = `${powerConsumption.toFixed(2)} kW`;
@@ -203,10 +197,7 @@ function drawMap(canvas, nodes, selectedId, time, powerConsumption, zoom) {
       context.beginPath();
       context.arc(px, py, 3, 0, Math.PI * 2);
       context.fillStyle = '#a4f5c5';
-      context.shadowColor = '#54d69a';
-      context.shadowBlur = 12;
       context.fill();
-      context.shadowBlur = 0;
 
       if (dotIndex === 3 && Number.isFinite(powerConsumption)) {
         const label = `${powerConsumption.toFixed(2)} kW`;
@@ -267,10 +258,7 @@ function drawMap(canvas, nodes, selectedId, time, powerConsumption, zoom) {
       context.beginPath();
       context.arc(x, boxY - 5, 3 + pulse * 2, 0, Math.PI * 2);
       context.fillStyle = node.color;
-      context.shadowColor = node.color;
-      context.shadowBlur = 12;
       context.fill();
-      context.shadowBlur = 0;
       return;
     }
 
@@ -292,10 +280,7 @@ function drawMap(canvas, nodes, selectedId, time, powerConsumption, zoom) {
     context.beginPath();
     context.arc(x, y, radius * 0.38, 0, Math.PI * 2);
     context.fillStyle = node.color;
-    context.shadowColor = node.color;
-    context.shadowBlur = 13;
     context.fill();
-    context.shadowBlur = 0;
 
     context.font = '600 11px Segoe UI, sans-serif';
     context.textAlign = 'center';

@@ -82,7 +82,7 @@
 .node-picker > .summary-label { margin-bottom: 3px; }
 .node-picker-item { display: flex; align-items: center; gap: 8px; width: 100%; min-width: 0; border: 1px solid transparent; border-radius: 6px; padding: 7px 7px; background: transparent; color: #a3b4af; font: inherit; font-size: 15px; text-align: left; cursor: pointer; transition: .15s; }
 .node-picker-item:hover, .node-picker-item.is-selected { border-color: rgba(85, 217, 156, .15); background: rgba(85, 217, 156, .055); color: #dbe8e2; }
-.picker-dot { width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%; background: var(--node-color); box-shadow: 0 0 7px color-mix(in srgb, var(--node-color) 45%, transparent); }
+.picker-dot { width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%; background: var(--node-color); }
 .node-picker-item > span:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .picker-chevron { margin-left: auto; color: #71877e; font-size: 15px; }
 .dashboard-error { margin-top: 12px; color: #ff9a9a; font-size: 12px; }
@@ -94,7 +94,7 @@
 .substation-title h1 { color: #eff5f3; font-family: 'Rajdhani', 'Segoe UI', sans-serif; font-size: clamp(30px, 3vw, 40px); font-weight: 600; }
 .substation-connection { margin-bottom: 5px; padding: 9px 11px; border: 1px solid rgba(85, 217, 156, .2); border-radius: 20px; color: #89c9a9; }
 .substation-connection.is-stale { border-color: rgba(244, 189, 85, .2); color: #dfc17d; }
-.substation-connection.is-stale .status-dot { background: #e6b958; box-shadow: 0 0 9px rgba(230, 185, 88, .45); }
+.substation-connection.is-stale .status-dot { background: #e6b958; }
 .substation-card, .live-chart-card { max-width: 880px; padding: 23px; border: 1px solid rgba(146, 177, 174, .14); border-radius: 10px; background: linear-gradient(135deg, rgba(17, 29, 34, .94), rgba(11, 20, 25, .92)); }
 .substation-card-heading { display: flex; align-items: center; gap: 13px; padding-bottom: 20px; border-bottom: 1px solid rgba(146, 177, 174, .1); }
 .substation-card-heading .eyebrow { margin-bottom: 4px; font-size: 14px;}
