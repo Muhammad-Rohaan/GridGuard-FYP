@@ -48,8 +48,8 @@ function toRequestBody(values) {
   };
 }
 
-// Provides technical workers with the substation create, read, update, and delete UI.
-export default function TechnicalSubstationManager() {
+// Provides administrators with the substation create, read, update, and delete UI.
+export default function AdminSubstationManager() {
   const [substations, setSubstations] = useState([]);
   const [form, setForm] = useState(EMPTY_FORM);
   const [editingId, setEditingId] = useState(null);
@@ -126,7 +126,7 @@ export default function TechnicalSubstationManager() {
     <section className="substation-card technical-substation-manager" aria-labelledby="substation-management-title">
       <div className="substation-card-heading">
         <div>
-          <p className="eyebrow">TECHNICAL WORKER TOOLS</p>
+          <p className="eyebrow">ADMINISTRATION</p>
           <h2 id="substation-management-title">Manage substations</h2>
         </div>
         <button type="button" className="manager-secondary-button" onClick={loadSubstations} disabled={loading}>

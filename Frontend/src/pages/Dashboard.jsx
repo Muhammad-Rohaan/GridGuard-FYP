@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import { apiLogout } from '../services/auth.js';
 import { useLiveTelemetry } from '../services/LiveTelemetryProvider.jsx';
+import AdminSubstationManager from './AdminSubstationManager.jsx';
 import './dashboard.css';
 
 // Data describing the electicity network.
@@ -508,7 +509,9 @@ export default function Dashboard() {
         <div className="header-user">
           <div className="user-meta">
             <strong>{user.name}</strong>
-            <span>{user.role === 'TECHNICAL_WORKER' ? 'Technical worker' : 'Grid user'}</span>
+            <span>{user.role === 'SYS_ADMIN'
+              ? 'System administrator'
+              : user.role === 'TECHNICAL_WORKER' ? 'Technical worker' : 'Grid user'}</span>
           </div>
           <button className="logout-button" onClick={handleLogout} disabled={loading}>
             {loading ? 'Signing out…' : 'Sign out'}
@@ -576,6 +579,7 @@ export default function Dashboard() {
           {error && <p className="dashboard-error" role="alert">{error}</p>}
           {liveError && <p className="dashboard-error" role="alert">{liveError}</p>}
         </section>
+        {user.role === 'SYS_ADMIN' && <AdminSubstationManager />}
         <footer className="dashboard-footer"><span>GRIDGUARD COMMUNITY GRID</span><span>Network data is for demonstration purposes.</span></footer>
       </div>
     </main>

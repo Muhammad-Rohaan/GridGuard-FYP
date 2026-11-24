@@ -41,7 +41,7 @@ public interface LoadReadingRepo extends JpaRepository<ResidentialLoadReading, L
 
     // Selects all readings for the requested month/day and hour in playback order.
     @Query(value = """
-            SELECT * FROM load_readings
+            SELECT * FROM residential_load_readings
             WHERE TO_CHAR(recorded_at, 'MM-DD HH24') = :dateTime
             ORDER BY recorded_at ASC;
             """, nativeQuery = true)

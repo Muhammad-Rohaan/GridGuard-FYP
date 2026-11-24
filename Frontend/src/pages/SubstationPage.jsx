@@ -3,7 +3,6 @@ import { Link, useNavigate, useOutletContext, useParams } from 'react-router-dom
 import { apiLogout } from '../services/auth.js';
 import { useLiveTelemetry } from '../services/LiveTelemetryProvider.jsx';
 import LiveLoadChart from './LiveLoadChart.jsx';
-import TechnicalSubstationManager from './TechnicalSubstationManager.jsx';
 import './dashboard.css';
 
 export default function SubstationPage() {
@@ -44,7 +43,9 @@ export default function SubstationPage() {
         <div className="header-user">
           <div className="user-meta">
             <strong>{user.name}</strong>
-            <span>{user.role === 'TECHNICAL_WORKER' ? 'Technical worker' : 'Grid user'}</span>
+            <span>{user.role === 'SYS_ADMIN'
+              ? 'System administrator'
+              : user.role === 'TECHNICAL_WORKER' ? 'Technical worker' : 'Grid user'}</span>
           </div>
           <button className="logout-button" onClick={handleLogout} disabled={loading}>
             {loading ? 'Signing out…' : 'Sign out'}
@@ -111,7 +112,6 @@ export default function SubstationPage() {
             </div>
           </div>
         </section>
-        {user.role === 'TECHNICAL_WORKER' && <TechnicalSubstationManager />}
         <LiveLoadChart history={history} />
         {liveError && <p className="dashboard-error" role="alert">{liveError}</p>}
         {error && <p className="dashboard-error" role="alert">{error}</p>}

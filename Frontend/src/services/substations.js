@@ -1,5 +1,5 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
-const SUBSTATIONS_PATH = '/technical-worker/substations';
+const SUBSTATIONS_PATH = '/admin/substations';
 
 // Sends an authenticated CRUD request and surfaces backend errors.
 async function request(path, options = {}) {
@@ -21,7 +21,7 @@ async function request(path, options = {}) {
   return payload;
 }
 
-// Retrieves the substations available to a technical worker.
+// Retrieves the substations available to an administrator.
 export async function fetchSubstations() {
   const payload = await request('/fetch-subs');
   if (!Array.isArray(payload)) {
@@ -30,7 +30,7 @@ export async function fetchSubstations() {
   return payload;
 }
 
-// Creates a substation through the technical-worker API.
+// Creates a substation through the administrator API.
 export function createSubstation(substation) {
   return request('/register-substation', {
     method: 'POST',
@@ -48,7 +48,7 @@ export function updateSubstation(id, substation) {
   });
 }
 
-// Removes a substation through the technical-worker API.
+// Removes a substation through the administrator API.
 export function deleteSubstation(id) {
   return request(`/delete-substation/${encodeURIComponent(id)}`, {
     method: 'DELETE',
