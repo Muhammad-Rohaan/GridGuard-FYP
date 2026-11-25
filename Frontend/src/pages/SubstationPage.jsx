@@ -38,7 +38,7 @@ export default function SubstationPage() {
     <main className="dashboard-page">
       <header className="dashboard-header">
         <Link className="dashboard-brand" to="/" aria-label="GridGuard dashboard">
-          <span>GRID<span className="brand-accent">GUARD</span></span>
+          <span>Grid<span className="brand-accent">Guard AI</span></span>
         </Link>
         <div className="header-user">
           <div className="user-meta">

@@ -27,7 +27,7 @@ export default function Login() {
   };
 
   return (
-    <AuthShell title="Sign-In" subtitle="Authenticate to access the grid control dashboard">
+    <AuthShell title="Sign-In">
       {registered && <div className="alert alert-success">Please sign in.</div>}
       {error && <div className="alert alert-error">⚠ {error}</div>}
       <form onSubmit={submit} noValidate>

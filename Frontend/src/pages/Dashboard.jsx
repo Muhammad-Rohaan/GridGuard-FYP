@@ -490,7 +490,7 @@ export default function Dashboard() {
     <main className="dashboard-page">
       <header className="dashboard-header">
         <Link className="dashboard-brand" to="/" aria-label="GridGuard home">
-          <span>GRID<span className="brand-accent">GUARD</span></span>
+          <span>Grid<span className="brand-accent">Guard AI</span></span>
         </Link>
         <div className="header-user">
           <div className="user-meta">
@@ -506,21 +506,15 @@ export default function Dashboard() {
       </header>
 
       <div className="dashboard-content">
-        <section className="dashboard-intro">
-          <div>
-            <h1>Good to see you, {user.name.split(/\s+/)[0]}.</h1>
-          </div>
-        </section>
-
         <section className="network-summary" aria-label="Network summary">
           <div className="summary-card">
             <div className="simulation-time">
-              <span className="summary-label">SIMULATION TIME</span>
+              <span className="summary-label">Simulation Time</span>
               <strong>{simulationDateTime?.time || 'Waiting for data'}</strong>
             </div>
           </div>
           <div className="summary-card">
-            <div><span className="summary-label">AREA LOAD</span><strong>{formatLoad(liveData?.area.currentLoadKw)}</strong></div>
+            <div><span className="summary-label">Area Load</span><strong>{formatLoad(liveData?.area.currentLoadKw)}</strong></div>
           </div>
         </section>
 
@@ -541,7 +535,7 @@ export default function Dashboard() {
                 <div><p className="eyebrow">SELECTED ASSET</p><h3>Node details</h3></div>
               </div>
               <div className="selected-node">
-                <div><strong>{selectedNode.label}</strong><span>{selectedNode.type}</span></div>
+                <div><strong>{selectedNode.label}</strong></div>
               </div>
               <div className="detail-row"><span>Power Consumption</span><strong>{formatLoad(selectedLoad)}</strong></div>
               <div className="detail-row"><span>Connected to</span><strong>{connectedNodes.join(', ')}</strong></div>
@@ -571,7 +565,7 @@ export default function Dashboard() {
             <AdminSubstationManager />
           </>
         )}
-        <footer className="dashboard-footer"><span>GRIDGUARD COMMUNITY GRID</span><span>Network data is for demonstration purposes.</span></footer>
+        {/* <footer className="dashboard-footer"><span>GRIDGUARD COMMUNITY GRID</span></footer> */}
       </div>
     </main>
   );

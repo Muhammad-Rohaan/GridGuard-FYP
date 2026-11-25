@@ -41,7 +41,6 @@ body {
   text-shadow: none !important;
 }
 
-.brand-panel h1 span,
 .feature-list svg,
 .switch-line a,
 .eye:hover {
@@ -106,7 +105,6 @@ body {
   color: var(--text-primary);
 }
 
-.brand-accent,
 .back-to-map:hover,
 .map-zoom-controls button:hover:not(:disabled),
 .chart-range-controls button:hover,

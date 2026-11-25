@@ -32,7 +32,7 @@ export default function SignUp() {
   };
 
   return (
-    <AuthShell title="Register New User" subtitle="Create an user account">
+    <AuthShell title="Register New User">
       {error && <div className="alert alert-error">⚠ {error}</div>}
       <form onSubmit={submit} noValidate>
         <div className="field">

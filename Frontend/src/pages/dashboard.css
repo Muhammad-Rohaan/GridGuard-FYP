@@ -14,7 +14,6 @@
   background: #080F1C;
 }
 .dashboard-brand { display: flex; align-items: center; gap: 10px; color: #e8f1ef; text-decoration: none; font-size: 19px; font-weight: 800; letter-spacing: 2px; }
-.brand-accent { color: #58d7a0; }
 .gridguard-mark { display: inline-grid; place-items: center; width: 31px; height: 31px; border-radius: 9px; background: rgba(69, 210, 151, .13); color: #62e2aa; font-size: 25px; line-height: 1; }
 .network-pill { display: flex; align-items: center; gap: 8px; color: #9ab0aa; font-size: 13px; font-weight: 700; letter-spacing: 1.15px; }
 .header-user { display: flex; align-items: center; gap: 11px; }
@@ -33,7 +32,7 @@
 .network-pill { margin-bottom: 4px; padding: 10px 12px; border: 1px solid rgba(85, 217, 156, .17); border-radius: 20px; background: rgba(85, 217, 156, .045); color: #a7c7b9; font-size: 13px; }
 .network-pill { width: 6px; height: 6px; flex-basis: 6px; }
 .network-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; margin: 27px 0 34px; }
-.summary-card { display: flex; align-items: center; gap: 12px; min-height: 75px; padding: 14px 16px; border: 1px solid rgba(146, 177, 174, .12); border-radius: 5px; background: #1B304A; }
+.summary-card { display: flex; align-items: center; gap: 12px; min-height: 75px; padding: 14px 16px; border: 1px solid rgba(146, 177, 174, .12); border-radius: 2px; background: #1B304A; }
 .summary-card > div { display: grid; gap: 5px; }
 .summary-label { color: #849b95; font-size: 14px; font-weight: 700; letter-spacing: 1.15px; }
 .summary-card strong { color: #e2ece9; font-size: 14px; font-weight: 600; }

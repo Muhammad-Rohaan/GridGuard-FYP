@@ -183,7 +183,6 @@ export default function LiveLoadChart({ history }) {
           <p className="chart-empty-state">Waiting for live readings from the dashboard feed…</p>
         )}
       </div>
-      <p className="chart-hint">Move across the chart or focus it and use ← / → to inspect values.</p>
     </section>
   );
 }
