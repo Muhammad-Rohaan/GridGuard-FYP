@@ -28,7 +28,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', syste
 .card-title { font-size: 28px; letter-spacing: 1.5px; }
 .card-sub { color: var(--muted); font-size: 13px; margin: 4px 0 22px; }
 .card-foot { margin-top: 22px; text-align: center; color: #4f7288; font-size: 11px; letter-spacing: 1px; }
-.field { margin-bottom: 15px; flex: 1; }
+.field { margin-top: 15px; margin-bottom: 15px; flex: 1; }
 .field label { display: block; font-size: 11px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
 .field-row { display: flex; gap: 12px; }
 .input-wrap { position: relative; }
