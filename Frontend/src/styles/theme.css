@@ -32,6 +32,7 @@
 body {
   background: var(--bg-primary);
   color: var(--text-primary);
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
 }
 
 *,
@@ -133,7 +134,6 @@ body {
   background: var(--bg-secondary);
 }
 
-.logout-button,
 .map-zoom-controls,
 .map-zoom-controls button,
 .chart-range-controls,
@@ -141,7 +141,6 @@ body {
   border-color: color-mix(in srgb, var(--border-color) 80%, transparent);
 }
 
-.logout-button,
 .manager-primary-button,
 .manager-secondary-button,
 .manager-danger-button {
@@ -149,7 +148,6 @@ body {
   color: var(--text-secondary);
 }
 
-.logout-button:hover:not(:disabled),
 .manager-primary-button:hover:not(:disabled),
 .manager-secondary-button:hover:not(:disabled) {
   border-color: color-mix(in srgb, var(--accent-primary) 58%, transparent);
