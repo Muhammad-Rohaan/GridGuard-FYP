@@ -1,6 +1,8 @@
 package com.fyp.gridguard.Controllers;
 
 
+import com.fyp.gridguard.DTOs.ChangePasswordRequestDTO;
+import com.fyp.gridguard.Models.UserPrincipal;
 import com.fyp.gridguard.Models.Users;
 import com.fyp.gridguard.Routes.AuthRoutes;
 import com.fyp.gridguard.Services.CookiesService;
@@ -78,21 +80,15 @@ public class AuthController extends AuthRoutes {
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request, @AuthenticationPrincipal UserDetails userDetails) {
-        if (request == null
-                || request.currentPassword() == null || request.currentPassword().isBlank()
-                || request.newPassword() == null || request.newPassword().length() < 8) {
-            return ResponseEntity.badRequest().body("Enter your current password and a new password with at least 8 characters.");
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequestDTO request, UserPrincipal userPrincipal) {
+        if (request == null || request.currentPassword() == null || request.currentPassword().isBlank() || request.newPassword() == null) {
+            return ResponseEntity.badRequest().body("Enter your current password and a new password.");
         }
-
         if (request.currentPassword().equals(request.newPassword())) {
             return ResponseEntity.badRequest().body("Your new password must be different from your current password.");
         }
 
-        if (!userService.changePassword(
-                userDetails.getUsername(),
-                request.currentPassword(),
-                request.newPassword())) {
+        if (!userService.changePassword(userPrincipal.getUsername(), request.currentPassword(), request.newPassword())) {
             return ResponseEntity.badRequest().body("Current password is incorrect.");
         }
 
@@ -116,6 +112,6 @@ public class AuthController extends AuthRoutes {
         return ResponseEntity.noContent().build();
     }
 
-    public record ChangePasswordRequest(String currentPassword, String newPassword) {}
+
 
 }

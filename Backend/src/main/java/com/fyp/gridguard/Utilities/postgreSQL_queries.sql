@@ -2,6 +2,7 @@
 select * from areas;
 select * from substations;
 select * from residential_load_readings;
+select * from users;
 
 -- 1. Insert into substations
 INSERT INTO substations (code, name, sub_profile_type, status, capacity_kw, current_load_kw)
@@ -17,9 +18,10 @@ VALUES (
     CURRENT_TIMESTAMP
 );
 
+delete from users where user_id = 7;
+
 CREATE UNIQUE INDEX ux_load_readings_area_time
 ON residential_load_readings(area_id, recorded_at);
-
 
 --------
 -- Do this when add new role in Role (Enum)
@@ -34,4 +36,9 @@ ALTER TABLE users
 ADD CONSTRAINT users_roles_check
 CHECK (roles IN ('USER', 'TECHNICAL_WORKER', 'SYS_ADMIN'));
 
----------------
+
+
+
+
+
+
