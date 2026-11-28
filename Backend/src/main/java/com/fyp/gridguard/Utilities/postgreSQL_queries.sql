@@ -35,10 +35,3 @@ ALTER TABLE users DROP CONSTRAINT users_roles_check;
 ALTER TABLE users
 ADD CONSTRAINT users_roles_check
 CHECK (roles IN ('USER', 'TECHNICAL_WORKER', 'SYS_ADMIN'));
-
-
-
-
-
-
-
